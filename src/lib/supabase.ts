@@ -32,11 +32,23 @@ const messages: Record<string, string> = {
   invalid_items: 'Confira quantidades e preços dos itens.',
   invalid_payment: 'Confira os valores dos pagamentos.',
   sale_already_canceled: 'Esta venda já foi cancelada.',
-  idempotency_key_reused: 'Esta venda já foi registrada.',
+  idempotency_key_reused: 'Esta operação já foi registrada.',
+  customer_required: 'Para vender fiado, escolha o cliente.',
+  invalid_customer: 'Cliente inválido ou inativo.',
+  amount_exceeds_balance: 'O valor é maior que a dívida do cliente.',
+  invalid_amount: 'Informe um valor válido.',
 }
 
 export const METODOS: Record<string, string> = {
-  cash: 'Dinheiro', pix: 'Pix', debit_card: 'Cartão de débito', credit_card: 'Cartão de crédito',
+  cash: 'Dinheiro', pix: 'Pix', debit_card: 'Cartão de débito', credit_card: 'Cartão de crédito', fiado: 'Fiado',
+}
+export const METODOS_RECEBIMENTO = ['cash', 'pix', 'debit_card', 'credit_card'] as const
+
+/** Link do WhatsApp com DDI 55 quando o número vier só com DDD */
+export function linkWhatsApp(telefone: string, texto: string) {
+  let n = telefone.replace(/\D/g, '')
+  if (n.length === 10 || n.length === 11) n = '55' + n
+  return `https://wa.me/${n}?text=${encodeURIComponent(texto)}`
 }
 
 export function traduzErro(err: unknown): string {

@@ -5,12 +5,14 @@ import { useStore } from '../lib/store'
 import { Card, Spinner } from '../components/ui'
 
 type Totais = { revenue: number; cost: number; gross_profit: number; valid_count: number }
+type Receber = { total: number; overdue: number; customers_open: number; customers_overdue: number }
 type Item = { variant_id: string; product_name: string; stock_quantity: number; min_stock: number; active: boolean }
 
 export default function Dashboard() {
   const { current, canManage } = useStore()
   const [totais, setTotais] = useState<Totais | null>(null)
   const [catalogo, setCatalogo] = useState<Item[]>([])
+  const [receber, setReceber] = useState<Receber | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -20,7 +22,9 @@ export default function Dashboard() {
     Promise.all([
       canManage ? supabase.rpc('get_sales_totals_stage33', { _store_id: current.id }) : Promise.resolve({ data: null }),
       supabase.rpc('get_product_catalog', { _store_id: current.id }),
-    ]).then(([t, c]) => {
+      supabase.rpc('get_receivables_summary', { _store_id: current.id }),
+    ]).then(([t, c, r]) => {
+      setReceber((r.data as Receber) ?? null)
       if (!alive) return
       setTotais((t.data as Totais) ?? null)
       setCatalogo(((c.data as Item[]) ?? []).filter((i) => i.active))
@@ -53,7 +57,14 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card>
+          <h2 className="font-semibold">Fiado a receber</h2>
+          <div className="mt-1 text-xl font-semibold text-brand-900">{brl(receber?.total)}</div>
+          <p className="mt-1 text-sm text-muted">{receber?.customers_open ?? 0} cliente(s) devendo
+            {receber && receber.customers_overdue > 0 && <span className="text-red-600"> · {receber.customers_overdue} em atraso ({brl(receber.overdue)})</span>}</p>
+          <Link to="/fiado" className="mt-3 inline-block text-sm font-medium text-brand-700 hover:underline">Ver clientes →</Link>
+        </Card>
         <Card>
           <h2 className="font-semibold">Produtos</h2>
           <p className="mt-1 text-sm text-muted">{catalogo.length} itens ativos no catálogo</p>

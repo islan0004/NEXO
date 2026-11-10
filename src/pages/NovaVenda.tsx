@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { METODOS, brl, labelVariant, parseNum, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { Alert, Button, Card, Spinner, cellInput } from '../components/ui'
+import ClienteSelect, { type Cliente } from '../components/ClienteSelect'
 
 type Item = {
   variant_id: string; product_id: string; product_name: string; sku: string | null; attributes: Attrs
@@ -25,6 +26,7 @@ export default function NovaVenda() {
   const [descValor, setDescValor] = useState('')
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([{ method: 'pix', valor: '' }])
   const [recebido, setRecebido] = useState('')
+  const [cliente, setCliente] = useState<Cliente | null>(null)
   const [erro, setErro] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [chave, setChave] = useState(() => crypto.randomUUID())
@@ -86,12 +88,14 @@ export default function NovaVenda() {
     if (desconto > subtotal) return setErro('O desconto é maior que o valor da venda.')
     const payments = pagamentos.map((p) => ({ method: p.method, amount: r2(parseNum(p.valor) || 0) })).filter((p) => p.amount > 0)
     if (total > 0 && !payments.length) return setErro('Informe a forma de pagamento.')
+    if (payments.some((p) => p.method === 'fiado') && !cliente) return setErro('Para vender fiado, escolha o cliente.')
     if (restante !== 0) return setErro(restante > 0 ? `Faltam ${brl(restante)} nos pagamentos.` : `Os pagamentos passam ${brl(-restante)} do total.`)
 
     setSalvando(true)
     const { data, error } = await supabase.rpc('create_paid_sale', {
       _store_id: current!.id, _items: items, _payments: payments, _idempotency_key: chave,
       _discount_type: dv > 0 ? descTipo : null, _discount_value: dv > 0 ? (descTipo === 'fixed' ? r2(dv) : dv) : 0, _sold_at: null,
+      _customer_id: cliente?.id ?? null,
     })
     setSalvando(false)
     if (error) {
@@ -193,6 +197,11 @@ export default function NovaVenda() {
             {restante !== 0 && carrinho.length > 0 && (
               <p className={`text-sm ${restante > 0 ? 'text-amber-700' : 'text-red-600'}`}>{restante > 0 ? `Faltam ${brl(restante)}` : `Passou ${brl(-restante)}`}</p>
             )}
+          </div>
+
+          <div>
+            <span className="mb-1.5 block text-sm text-muted">Cliente {pagamentos.some((p) => p.method === 'fiado') ? <span className="text-red-600">(obrigatório no fiado)</span> : '(opcional)'}</span>
+            <ClienteSelect storeId={current!.id} value={cliente} onChange={setCliente} />
           </div>
 
           {emDinheiro > 0 && (

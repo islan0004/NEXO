@@ -5,7 +5,7 @@ import { useStore } from '../lib/store'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
 
 type Detalhe = {
-  sale: { id: string; number: number; status: string; total: number; subtotal: number; discount_total: number; sold_at: string }
+  sale: { id: string; number: number; customer_id: string | null; status: string; total: number; subtotal: number; discount_total: number; sold_at: string }
   items: { id: string; product_name: string; attributes: Attrs; quantity: number; unit_price: number; line_total: number; unit_cost: number | null; line_cost: number | null }[]
   payments: { method: string; amount: number }[]
   cancellation: { created_at: string; reason: string | null; responsible_name: string | null } | null
@@ -22,10 +22,16 @@ export default function VendaDetalhe() {
   const [d, setD] = useState<Detalhe | null>(null)
   const [loading, setLoading] = useState(true)
   const [cancelar, setCancelar] = useState(false)
+  const [cliente, setCliente] = useState<{ id: string; name: string } | null>(null)
 
   const carregar = useCallback(async () => {
     const { data } = await supabase.rpc('get_sale_stage33', { _sale_id: id })
-    setD((data as Detalhe) ?? null)
+    const det = (data as Detalhe) ?? null
+    setD(det)
+    if (det?.sale.customer_id) {
+      const { data: c } = await supabase.from('customers').select('id, name').eq('id', det.sale.customer_id).maybeSingle()
+      setCliente(c)
+    }
     setLoading(false)
   }, [id])
 
@@ -44,7 +50,8 @@ export default function VendaDetalhe() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">Venda #{d.sale.number} {cancelada && <Badge tone="red">Cancelada</Badge>}</h1>
-          <p className="text-sm text-muted">{new Date(d.sale.sold_at).toLocaleString('pt-BR')}</p>
+          <p className="text-sm text-muted">{new Date(d.sale.sold_at).toLocaleString('pt-BR')}
+            {cliente && <> · Cliente: <Link to={`/fiado/${cliente.id}`} className="text-brand-700 hover:underline">{cliente.name}</Link></>}</p>
         </div>
         <div className="flex gap-2">
           {nova && <Button onClick={() => nav('/vendas/nova')}>+ Nova venda</Button>}

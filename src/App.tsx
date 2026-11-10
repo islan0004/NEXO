@@ -5,7 +5,9 @@ import { Spinner } from './components/ui'
 import AppLayout from './components/AppLayout'
 import { Cadastro, Entrar, EsqueciSenha, RedefinirSenha } from './pages/Auth'
 import CriarLoja from './pages/CriarLoja'
-import Dashboard, { EmBreve } from './pages/Dashboard'
+import Dashboard from './pages/Dashboard'
+import Fiado from './pages/Fiado'
+import ClienteDetalhe from './pages/ClienteDetalhe'
 import Produtos from './pages/Produtos'
 import ProdutoDetalhe from './pages/ProdutoDetalhe'
 import Vendas from './pages/Vendas'
@@ -43,7 +45,8 @@ export default function App() {
           <Route path="/vendas" element={<Vendas />} />
           <Route path="/vendas/nova" element={<NovaVenda />} />
           <Route path="/vendas/:id" element={<VendaDetalhe />} />
-          <Route path="/fiado" element={<EmBreve titulo="Fiado" />} />
+          <Route path="/fiado" element={<Fiado />} />
+          <Route path="/fiado/:id" element={<ClienteDetalhe />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       )}
