@@ -1,33 +1,39 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { brl, pct, supabase } from '../lib/supabase'
+import { brl, labelVariant, pct, qtd, supabase, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
+import { periodo } from '../lib/periodo'
 import { Card, Spinner } from '../components/ui'
+import type { Relatorio } from './Relatorios'
 
-type Totais = { revenue: number; cost: number; gross_profit: number; valid_count: number }
 type Receber = { total: number; overdue: number; customers_open: number; customers_overdue: number }
-type Item = { variant_id: string; product_name: string; stock_quantity: number; min_stock: number; active: boolean }
+type Item = { variant_id: string; product_id: string; product_name: string; attributes: Attrs; stock_quantity: number; min_stock: number; active: boolean }
 
 export default function Dashboard() {
   const { current, canManage } = useStore()
-  const [totais, setTotais] = useState<Totais | null>(null)
-  const [catalogo, setCatalogo] = useState<Item[]>([])
+  const [mes, setMes] = useState<Relatorio | null>(null)
+  const [dia, setDia] = useState<Relatorio | null>(null)
   const [receber, setReceber] = useState<Receber | null>(null)
+  const [catalogo, setCatalogo] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!current) return
     let alive = true
     setLoading(true)
+    const m = periodo('mes'), h = periodo('hoje')
+    const nada = Promise.resolve({ data: null })
     Promise.all([
-      canManage ? supabase.rpc('get_sales_totals_stage33', { _store_id: current.id }) : Promise.resolve({ data: null }),
+      canManage ? supabase.rpc('get_sales_report', { _store_id: current.id, _from: m.de, _to: m.ate }) : nada,
+      canManage ? supabase.rpc('get_sales_report', { _store_id: current.id, _from: h.de, _to: h.ate }) : nada,
       supabase.rpc('get_product_catalog', { _store_id: current.id }),
       supabase.rpc('get_receivables_summary', { _store_id: current.id }),
-    ]).then(([t, c, r]) => {
-      setReceber((r.data as Receber) ?? null)
+    ]).then(([rm, rh, c, r]) => {
       if (!alive) return
-      setTotais((t.data as Totais) ?? null)
+      setMes((rm.data as Relatorio) ?? null)
+      setDia((rh.data as Relatorio) ?? null)
       setCatalogo(((c.data as Item[]) ?? []).filter((i) => i.active))
+      setReceber((r.data as Receber) ?? null)
       setLoading(false)
     })
     return () => { alive = false }
@@ -36,7 +42,8 @@ export default function Dashboard() {
   if (loading) return <Spinner />
 
   const baixo = catalogo.filter((i) => Number(i.stock_quantity) <= Number(i.min_stock))
-  const margem = totais && totais.revenue > 0 ? (totais.gross_profit / totais.revenue) * 100 : 0
+  const produtos = new Set(catalogo.map((i) => i.product_id)).size
+  const margem = mes && mes.revenue > 0 ? (mes.gross_profit / mes.revenue) * 100 : 0
 
   return (
     <div className="space-y-6">
@@ -49,12 +56,15 @@ export default function Dashboard() {
       </div>
 
       {canManage && (
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <Stat label="Faturamento" value={brl(totais?.revenue)} />
-          <Stat label="Lucro bruto" value={brl(totais?.gross_profit)} hint={`Margem ${pct(margem)}`} />
-          <Stat label="Custo das vendas" value={brl(totais?.cost)} />
-          <Stat label="Vendas" value={String(totais?.valid_count ?? 0)} />
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <Stat label="Vendido hoje" value={brl(dia?.revenue)} hint={`${dia?.sales_count ?? 0} venda(s)`} />
+            <Stat label="Faturamento do mês" value={brl(mes?.revenue)} hint={`${mes?.sales_count ?? 0} venda(s)`} />
+            <Stat label="Lucro bruto do mês" value={brl(mes?.gross_profit)} hint={`Margem ${pct(margem)}`} green />
+            <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
+          </div>
+          <Link to="/relatorios" className="inline-block text-sm font-medium text-brand-700 hover:underline">Ver relatórios por período →</Link>
+        </>
       )}
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -67,10 +77,10 @@ export default function Dashboard() {
         </Card>
         <Card>
           <h2 className="font-semibold">Produtos</h2>
-          <p className="mt-1 text-sm text-muted">{catalogo.length} itens ativos no catálogo</p>
-          {catalogo.length === 0 && (
-            <Link to="/produtos" className="mt-4 inline-block text-sm font-medium text-brand-700 hover:underline">Cadastrar o primeiro produto →</Link>
-          )}
+          <p className="mt-1 text-sm text-muted">{produtos} produto(s) ativo(s){catalogo.length > produtos ? `, ${catalogo.length} itens contando variações` : ''}</p>
+          <Link to="/produtos" className="mt-3 inline-block text-sm font-medium text-brand-700 hover:underline">
+            {catalogo.length === 0 ? 'Cadastrar o primeiro produto →' : 'Ver produtos →'}
+          </Link>
         </Card>
         <Card>
           <h2 className="font-semibold">Estoque baixo</h2>
@@ -79,11 +89,14 @@ export default function Dashboard() {
           ) : (
             <ul className="mt-3 space-y-2 text-sm">
               {baixo.slice(0, 6).map((i) => (
-                <li key={i.variant_id} className="flex justify-between">
-                  <span>{i.product_name}</span>
-                  <span className="font-medium text-red-600">{Number(i.stock_quantity)} un.</span>
+                <li key={i.variant_id}>
+                  <Link to={canManage ? `/produtos/${i.product_id}` : '/produtos'} className="flex justify-between gap-2 hover:underline">
+                    <span>{i.product_name}{Object.keys(i.attributes ?? {}).length > 0 && <span className="text-muted"> · {labelVariant(i.attributes)}</span>}</span>
+                    <span className="whitespace-nowrap font-medium text-red-600">{qtd(i.stock_quantity)} un.</span>
+                  </Link>
                 </li>
               ))}
+              {baixo.length > 6 && <li className="text-xs text-muted">e mais {baixo.length - 6}</li>}
             </ul>
           )}
         </Card>
@@ -92,21 +105,12 @@ export default function Dashboard() {
   )
 }
 
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function Stat({ label, value, hint, green }: { label: string; value: string; hint?: string; green?: boolean }) {
   return (
     <Card>
       <div className="text-sm text-muted">{label}</div>
-      <div className="mt-1 text-xl font-semibold tracking-tight text-brand-900">{value}</div>
+      <div className={`mt-1 text-xl font-semibold tracking-tight ${green ? 'text-emerald-700' : 'text-brand-900'}`}>{value}</div>
       {hint && <div className="mt-0.5 text-xs text-muted">{hint}</div>}
-    </Card>
-  )
-}
-
-export function EmBreve({ titulo }: { titulo: string }) {
-  return (
-    <Card className="py-12 text-center">
-      <h1 className="text-lg font-semibold">{titulo}</h1>
-      <p className="mt-1 text-sm text-muted">Próxima etapa do NEXO.</p>
     </Card>
   )
 }

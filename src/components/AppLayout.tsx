@@ -10,17 +10,18 @@ const nav = [
   { to: '/produtos', label: 'Produtos e estoque' },
   { to: '/vendas', label: 'Vendas' },
   { to: '/fiado', label: 'Fiado' },
+  { to: '/relatorios', label: 'Relatórios', gestor: true },
 ]
 
 export default function AppLayout() {
-  const { current, stores, select } = useStore()
+  const { current, stores, select, canManage } = useStore()
   const { session } = useAuth()
   const [open, setOpen] = useState(false)
   const nome = (session?.user.user_metadata?.full_name as string | undefined) ?? session?.user.email
 
   const links = (
     <nav className="space-y-1">
-      {nav.map((n) => (
+      {nav.filter((n) => !('gestor' in n) || canManage).map((n) => (
         <NavLink key={n.to} to={n.to} end={n.end} onClick={() => setOpen(false)}
           className={({ isActive }) => `block rounded-xl px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-brand-100 text-brand-800' : 'text-muted hover:bg-brand-50 hover:text-ink'}`}>
           {n.label}
