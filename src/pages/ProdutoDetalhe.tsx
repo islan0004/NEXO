@@ -115,7 +115,7 @@ export default function ProdutoDetalhe() {
                   <td className="px-4 py-2.5 text-muted">{v.sku ?? '—'}</td>
                   <td className="px-4 py-2.5 text-right">{brl(custo)}</td>
                   <td className="px-4 py-2.5 text-right">{brl(preco)}</td>
-                  <td className="px-4 py-2.5 text-right text-muted">{margem.toFixed(0)}%</td>
+                  <td className="px-4 py-2.5 text-right text-muted">{Math.round(margem)}%</td>
                   <td className={`px-4 py-2.5 text-right font-medium ${baixo && v.active ? 'text-red-600' : ''}`}>
                     {qtd(v.stock_quantity)}<span className="block text-xs font-normal text-muted">mín. {qtd(v.min_stock)}</span>
                   </td>

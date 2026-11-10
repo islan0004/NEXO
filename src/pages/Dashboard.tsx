@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { brl, supabase } from '../lib/supabase'
+import { brl, pct, supabase } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { Card, Spinner } from '../components/ui'
 
@@ -47,7 +47,7 @@ export default function Dashboard() {
       {canManage && (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <Stat label="Faturamento" value={brl(totais?.revenue)} />
-          <Stat label="Lucro bruto" value={brl(totais?.gross_profit)} hint={`Margem ${margem.toFixed(1)}%`} />
+          <Stat label="Lucro bruto" value={brl(totais?.gross_profit)} hint={`Margem ${pct(margem)}`} />
           <Stat label="Custo das vendas" value={brl(totais?.cost)} />
           <Stat label="Vendas" value={String(totais?.valid_count ?? 0)} />
         </div>

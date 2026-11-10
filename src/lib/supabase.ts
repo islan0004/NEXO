@@ -59,5 +59,12 @@ export function parseNum(s: string): number {
 export const qtd = (v: number | string) => Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 
 export type Attrs = Record<string, string>
+// O Postgres (jsonb) reordena as chaves; mostramos Tamanho primeiro, depois Cor, depois o resto
+const ORDEM = ['tamanho', 'numeração', 'numero', 'cor']
+const peso = (k: string) => { const i = ORDEM.indexOf(k.toLowerCase()); return i < 0 ? 99 : i }
 export const labelVariant = (a: Attrs | null | undefined) =>
-  a && Object.keys(a).length ? Object.values(a).join(' / ') : 'Padrão'
+  a && Object.keys(a).length
+    ? Object.keys(a).sort((x, y) => peso(x) - peso(y) || x.localeCompare(y, 'pt-BR')).map((k) => a[k]).join(' / ')
+    : 'Padrão'
+
+export const pct = (n: number) => `${n.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`

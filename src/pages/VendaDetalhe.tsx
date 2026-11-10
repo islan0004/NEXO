@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { METODOS, brl, labelVariant, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
+import { METODOS, brl, labelVariant, pct, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
 
@@ -84,12 +84,12 @@ export default function VendaDetalhe() {
             <div key={i} className="flex justify-between text-sm"><span>{METODOS[p.method] ?? p.method}</span><span>{brl(p.amount)}</span></div>
           ))}
         </Card>
-        {canManage && d.gross_profit !== null && (
+        {canManage && !cancelada && d.gross_profit !== null && (
           <Card>
             <h2 className="mb-2 font-semibold">Resultado</h2>
             <div className="flex justify-between text-sm"><span className="text-muted">Custo</span><span>{brl(d.cost_total)}</span></div>
             <div className="flex justify-between text-sm font-semibold text-emerald-700"><span>Lucro bruto</span><span>{brl(d.gross_profit)}</span></div>
-            <div className="text-right text-xs text-muted">margem {d.sale.total > 0 ? ((d.gross_profit / d.sale.total) * 100).toFixed(1) : '0'}%</div>
+            <div className="text-right text-xs text-muted">margem {pct(d.sale.total > 0 ? (d.gross_profit / d.sale.total) * 100 : 0)}</div>
           </Card>
         )}
       </div>
