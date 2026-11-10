@@ -6,6 +6,8 @@ import AppLayout from './components/AppLayout'
 import { Cadastro, Entrar, EsqueciSenha, RedefinirSenha } from './pages/Auth'
 import CriarLoja from './pages/CriarLoja'
 import Dashboard, { EmBreve } from './pages/Dashboard'
+import Produtos from './pages/Produtos'
+import ProdutoDetalhe from './pages/ProdutoDetalhe'
 
 function Protegido() {
   const { stores, loading } = useStore()
@@ -33,7 +35,8 @@ export default function App() {
       ) : (
         <Route element={<StoreProvider><Protegido /></StoreProvider>}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/produtos" element={<EmBreve titulo="Produtos e estoque" />} />
+          <Route path="/produtos" element={<Produtos />} />
+          <Route path="/produtos/:id" element={<ProdutoDetalhe />} />
           <Route path="/vendas" element={<EmBreve titulo="Vendas" />} />
           <Route path="/fiado" element={<EmBreve titulo="Fiado" />} />
           <Route path="*" element={<Navigate to="/" replace />} />

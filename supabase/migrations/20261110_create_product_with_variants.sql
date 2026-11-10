@@ -1,0 +1,3 @@
+-- Aplicada via Supabase MCP em 10/11/2026. Mantida aqui como registro.
+-- Cria produto + todas as variações + estoque inicial numa única transação.
+-- Ver definição completa no banco: public.create_product_with_variants(uuid, text, uuid, jsonb)

@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
 
 export function Logo({ className = '' }: { className?: string }) {
   return (
@@ -57,6 +57,39 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
     </div>
   )
 }
+
+export function Modal({ title, onClose, children, wide }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-4" onClick={onClose}>
+      <div className={`max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:rounded-2xl ${wide ? 'sm:max-w-3xl' : 'sm:max-w-md'}`}
+        onClick={(e) => e.stopPropagation()}>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          <button onClick={onClose} className="rounded-lg px-2 py-1 text-muted hover:bg-brand-50" aria-label="Fechar">✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export function Select({ label, children, ...p }: SelectHTMLAttributes<HTMLSelectElement> & { label: string }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-sm font-medium text-ink">{label}</span>
+      <select className="w-full rounded-xl border border-brand-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100" {...p}>
+        {children}
+      </select>
+    </label>
+  )
+}
+
+export function Badge({ tone = 'brand', children }: { tone?: 'brand' | 'red' | 'gray'; children: ReactNode }) {
+  const s = tone === 'red' ? 'bg-red-50 text-red-700' : tone === 'gray' ? 'bg-gray-100 text-gray-600' : 'bg-brand-100 text-brand-800'
+  return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${s}`}>{children}</span>
+}
+
+export const cellInput = 'w-full rounded-lg border border-brand-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100'
 
 export function Spinner() {
   return (

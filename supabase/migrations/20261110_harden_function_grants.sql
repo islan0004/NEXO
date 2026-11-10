@@ -1,0 +1,12 @@
+revoke execute on all functions in schema public from public, anon;
+revoke execute on function public.rls_auto_enable() from authenticated;
+revoke execute on function public.handle_new_user() from authenticated;
+revoke execute on function public.apply_stock_movement() from authenticated;
+revoke execute on function public.apply_sale_cancellation() from authenticated;
+revoke execute on function public.guard_variant_stock() from authenticated;
+revoke execute on function public.forbid_sale_change() from authenticated;
+revoke execute on function public.forbid_stock_movement_change() from authenticated;
+revoke execute on function public.check_product_category() from authenticated;
+revoke execute on function public.set_updated_at() from authenticated;
+revoke execute on function public.create_sale(uuid, jsonb, uuid, timestamptz) from authenticated;
+alter default privileges in schema public revoke execute on functions from public, anon;
