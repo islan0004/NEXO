@@ -8,6 +8,9 @@ import CriarLoja from './pages/CriarLoja'
 import Dashboard, { EmBreve } from './pages/Dashboard'
 import Produtos from './pages/Produtos'
 import ProdutoDetalhe from './pages/ProdutoDetalhe'
+import Vendas from './pages/Vendas'
+import NovaVenda from './pages/NovaVenda'
+import VendaDetalhe from './pages/VendaDetalhe'
 
 function Protegido() {
   const { stores, loading } = useStore()
@@ -37,7 +40,9 @@ export default function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/produtos" element={<Produtos />} />
           <Route path="/produtos/:id" element={<ProdutoDetalhe />} />
-          <Route path="/vendas" element={<EmBreve titulo="Vendas" />} />
+          <Route path="/vendas" element={<Vendas />} />
+          <Route path="/vendas/nova" element={<NovaVenda />} />
+          <Route path="/vendas/:id" element={<VendaDetalhe />} />
           <Route path="/fiado" element={<EmBreve titulo="Fiado" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

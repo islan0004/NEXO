@@ -36,9 +36,12 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Olá! Aqui está sua loja</h1>
-        <p className="text-sm text-muted">{current?.name}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Olá! Aqui está sua loja</h1>
+          <p className="text-sm text-muted">{current?.name}</p>
+        </div>
+        <Link to="/vendas/nova" className="rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-800">+ Nova venda</Link>
       </div>
 
       {canManage && (

@@ -26,6 +26,17 @@ const messages: Record<string, string> = {
   product_variants_store_sku_uidx: 'Já existe um produto com esse código (SKU).',
   categories_store_id_type_name_key: 'Já existe uma categoria com esse nome.',
   invalid_product_category: 'Categoria inválida.',
+  payment_total_mismatch: 'A soma dos pagamentos precisa ser igual ao total da venda.',
+  discount_exceeds_subtotal: 'O desconto é maior que o valor da venda.',
+  invalid_variant: 'Um dos produtos está inativo ou não existe mais.',
+  invalid_items: 'Confira quantidades e preços dos itens.',
+  invalid_payment: 'Confira os valores dos pagamentos.',
+  sale_already_canceled: 'Esta venda já foi cancelada.',
+  idempotency_key_reused: 'Esta venda já foi registrada.',
+}
+
+export const METODOS: Record<string, string> = {
+  cash: 'Dinheiro', pix: 'Pix', debit_card: 'Cartão de débito', credit_card: 'Cartão de crédito',
 }
 
 export function traduzErro(err: unknown): string {
