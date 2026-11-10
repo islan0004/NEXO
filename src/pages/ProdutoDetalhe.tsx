@@ -98,10 +98,10 @@ export default function ProdutoDetalhe() {
           <thead className="bg-brand-50/60 text-left text-xs uppercase tracking-wide text-muted">
             <tr>
               {temVariacoes && <th className="px-4 py-2 font-medium">Variação</th>}
-              <th className="px-4 py-2 font-medium">SKU</th>
-              <th className="px-4 py-2 text-right font-medium">Custo</th>
+              <th className="hidden px-4 py-2 font-medium sm:table-cell">SKU</th>
+              <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">Custo</th>
               <th className="px-4 py-2 text-right font-medium">Preço</th>
-              <th className="px-4 py-2 text-right font-medium">Margem</th>
+              <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">Margem</th>
               <th className="px-4 py-2 text-right font-medium">Estoque</th>
               <th className="px-4 py-2" />
             </tr>
@@ -114,16 +114,16 @@ export default function ProdutoDetalhe() {
               return (
                 <tr key={v.id} className={v.active ? '' : 'opacity-50'}>
                   {temVariacoes && <td className="px-4 py-2.5 font-medium">{labelVariant(v.attributes)} {!v.active && <Badge tone="gray">Inativa</Badge>}</td>}
-                  <td className="px-4 py-2.5 text-muted">{v.sku ?? '—'}</td>
-                  <td className="px-4 py-2.5 text-right">{brl(custo)}</td>
+                  <td className="hidden px-4 py-2.5 text-muted sm:table-cell">{v.sku ?? '—'}</td>
+                  <td className="hidden px-4 py-2.5 text-right sm:table-cell">{brl(custo)}</td>
                   <td className="px-4 py-2.5 text-right">{brl(preco)}</td>
-                  <td className="px-4 py-2.5 text-right text-muted">{Math.round(margem)}%</td>
+                  <td className="hidden px-4 py-2.5 text-right text-muted sm:table-cell">{Math.round(margem)}%</td>
                   <td className={`px-4 py-2.5 text-right font-medium ${baixo && v.active ? 'text-red-600' : ''}`}>
                     {qtd(v.stock_quantity)}<span className="block text-xs font-normal text-muted">mín. {qtd(v.min_stock)}</span>
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-right">
-                    <button className="mr-3 text-brand-700 hover:underline" onClick={() => setMovVar(v)}>Estoque</button>
-                    <button className="text-brand-700 hover:underline" onClick={() => setEditVar(v)}>Editar</button>
+                    <button className="text-brand-700 hover:underline" onClick={() => setMovVar(v)}>Estoque</button>
+                    <button className="ml-3 text-brand-700 hover:underline" onClick={() => setEditVar(v)}>Editar</button>
                   </td>
                 </tr>
               )
