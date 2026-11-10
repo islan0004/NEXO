@@ -20,3 +20,17 @@ html, body, #root { height: 100%; }
 body {
   @apply bg-brand-50/40 text-ink antialiased;
 }
+
+@keyframes nexo-toast-in { from { opacity: 0; transform: translateY(-8px) scale(.98) } to { opacity: 1; transform: none } }
+.nexo-toast { animation: nexo-toast-in .22s ease-out }
+
+@keyframes nexo-pop { 0% { transform: scale(.4); opacity: 0 } 60% { transform: scale(1.12); opacity: 1 } 100% { transform: scale(1) } }
+@keyframes nexo-draw { to { stroke-dashoffset: 0 } }
+.nexo-check { animation: nexo-pop .45s cubic-bezier(.2,.9,.3,1.2) both }
+.nexo-check path { stroke-dasharray: 30; stroke-dashoffset: 30; animation: nexo-draw .35s .25s ease-out forwards }
+
+@keyframes nexo-fade-up { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+main > * { animation: nexo-fade-up .25s ease-out }
+
+.pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)) }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { brl, labelVariant, pct, qtd, supabase, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
-import { periodo } from '../lib/periodo'
+import { dataBR, periodo } from '../lib/periodo'
+import { abrirWhatsApp, textoResumoDia } from '../lib/mensagens'
 import { Card, Spinner } from '../components/ui'
 import type { Relatorio } from './Relatorios'
 
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [dia, setDia] = useState<Relatorio | null>(null)
   const [receber, setReceber] = useState<Receber | null>(null)
   const [catalogo, setCatalogo] = useState<Item[]>([])
+  const [recebidoHoje, setRecebidoHoje] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,7 +30,9 @@ export default function Dashboard() {
       canManage ? supabase.rpc('get_sales_report', { _store_id: current.id, _from: h.de, _to: h.ate }) : nada,
       supabase.rpc('get_product_catalog', { _store_id: current.id }),
       supabase.rpc('get_receivables_summary', { _store_id: current.id }),
-    ]).then(([rm, rh, c, r]) => {
+      supabase.from('customer_payments').select('amount').eq('store_id', current.id).gte('paid_at', new Date(`${h.de}T00:00:00-03:00`).toISOString()),
+    ]).then(([rm, rh, c, r, cp]) => {
+      setRecebidoHoje(((cp.data as { amount: number }[]) ?? []).reduce((a, x) => a + Number(x.amount), 0))
       if (!alive) return
       setMes((rm.data as Relatorio) ?? null)
       setDia((rh.data as Relatorio) ?? null)
@@ -44,6 +48,13 @@ export default function Dashboard() {
   const baixo = catalogo.filter((i) => Number(i.stock_quantity) <= Number(i.min_stock))
   const produtos = new Set(catalogo.map((i) => i.product_id)).size
   const margem = mes && mes.revenue > 0 ? (mes.gross_profit / mes.revenue) * 100 : 0
+  const resumo = () => textoResumoDia({
+    loja: current?.name ?? '', data: dataBR(periodo('hoje').de),
+    vendido: Number(dia?.revenue ?? 0), lucro: Number(dia?.gross_profit ?? 0), vendas: dia?.sales_count ?? 0,
+    ticket: dia && dia.sales_count ? dia.revenue / dia.sales_count : 0, metodos: dia?.by_method ?? [],
+    recebidoFiado: recebidoHoje, aReceber: Number(receber?.total ?? 0), atrasados: receber?.customers_overdue ?? 0,
+    estoqueBaixo: baixo.map((i) => `${i.product_name}${Object.keys(i.attributes ?? {}).length ? ` (${labelVariant(i.attributes)})` : ''}: ${qtd(i.stock_quantity)} un.`),
+  })
 
   return (
     <div className="space-y-6">
@@ -63,7 +74,13 @@ export default function Dashboard() {
             <Stat label="Lucro bruto do mês" value={brl(mes?.gross_profit)} hint={`Margem ${pct(margem)}`} green />
             <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
           </div>
-          <Link to="/relatorios" className="inline-block text-sm font-medium text-brand-700 hover:underline">Ver relatórios por período →</Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <a href={abrirWhatsApp(resumo())} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50">
+              Fechar o dia · enviar resumo no WhatsApp
+            </a>
+            <Link to="/relatorios" className="text-sm font-medium text-brand-700 hover:underline">Ver relatórios por período →</Link>
+          </div>
         </>
       )}
 

@@ -4,6 +4,7 @@ import { METODOS, METODOS_RECEBIMENTO, brl, linkWhatsApp, parseNum, supabase, tr
 import { useStore } from '../lib/store'
 import { Alert, Badge, Button, Card, Field, Modal, Select, Spinner } from '../components/ui'
 import { ClienteForm, atrasado, type Saldo } from './Fiado'
+import { useToast } from '../lib/toast'
 
 type Cliente = { id: string; name: string; phone: string | null; notes: string | null; active: boolean }
 type Lanc = { kind: 'charge' | 'payment'; ref_id: string; sale_number: number | null; amount: number; method: string; note: string | null; happened_at: string; canceled: boolean }
@@ -17,7 +18,7 @@ export default function ClienteDetalhe() {
   const [loading, setLoading] = useState(true)
   const [receber, setReceber] = useState(false)
   const [editar, setEditar] = useState(false)
-  const [ok, setOk] = useState('')
+  const toast = useToast()
 
   const carregar = useCallback(async () => {
     if (!id || !current) return
@@ -44,7 +45,6 @@ export default function ClienteDetalhe() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <Link to="/fiado" className="text-sm text-brand-700 hover:underline">← Fiado</Link>
-      {ok && <Alert kind="ok">{ok}</Alert>}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -92,8 +92,8 @@ export default function ClienteDetalhe() {
       </Card>
 
       {receber && <Receber customerId={cliente.id} saldo={devendo} onClose={() => setReceber(false)}
-        onDone={(v) => { setReceber(false); setOk(`Pagamento de ${brl(v)} registrado.`); carregar() }} />}
-      {editar && current && <ClienteForm storeId={current.id} cliente={cliente} onClose={() => setEditar(false)} onSaved={() => { setEditar(false); carregar() }} />}
+        onDone={(v) => { setReceber(false); toast(`Pagamento de ${brl(v)} registrado`); carregar() }} />}
+      {editar && current && <ClienteForm storeId={current.id} cliente={cliente} onClose={() => setEditar(false)} onSaved={() => { setEditar(false); toast('Cliente atualizado'); carregar() }} />}
     </div>
   )
 }

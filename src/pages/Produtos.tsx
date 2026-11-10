@@ -5,6 +5,7 @@ import { useStore } from '../lib/store'
 import { useCategorias } from '../lib/categories'
 import { Badge, Button, Card, Spinner } from '../components/ui'
 import NovoProduto from './NovoProduto'
+import { useToast } from '../lib/toast'
 
 type Linha = {
   variant_id: string; product_id: string; product_name: string; category_id: string | null
@@ -21,6 +22,7 @@ export default function Produtos() {
   const { current, canManage } = useStore()
   const { categorias, criar } = useCategorias(current?.id)
   const nav = useNavigate()
+  const toast = useToast()
   const [linhas, setLinhas] = useState<Linha[]>([])
   const [loading, setLoading] = useState(true)
   const [busca, setBusca] = useState('')
@@ -133,7 +135,7 @@ export default function Produtos() {
       {novo && current && (
         <NovoProduto storeId={current.id} categorias={categorias} criarCategoria={criar}
           onClose={() => setNovo(false)}
-          onCreated={(id) => { setNovo(false); nav(`/produtos/${id}`) }} />
+          onCreated={(id) => { setNovo(false); toast('Produto cadastrado'); nav(`/produtos/${id}`) }} />
       )}
     </div>
   )

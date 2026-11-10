@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { METODOS, brl, labelVariant, pct, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
+import { abrirWhatsApp, textoComprovante } from '../lib/mensagens'
+import { useToast } from '../lib/toast'
 
 type Detalhe = {
   sale: { id: string; number: number; customer_id: string | null; status: string; total: number; subtotal: number; discount_total: number; sold_at: string }
@@ -15,22 +17,29 @@ type Detalhe = {
 
 export default function VendaDetalhe() {
   const { id } = useParams()
-  const { canManage } = useStore()
+  const { canManage, current } = useStore()
+  const toast = useToast()
   const loc = useLocation()
   const nav = useNavigate()
   const nova = (loc.state as { nova?: boolean } | null)?.nova
   const [d, setD] = useState<Detalhe | null>(null)
   const [loading, setLoading] = useState(true)
   const [cancelar, setCancelar] = useState(false)
-  const [cliente, setCliente] = useState<{ id: string; name: string } | null>(null)
+  const [cliente, setCliente] = useState<{ id: string; name: string; phone: string | null } | null>(null)
+  const [saldoFiado, setSaldoFiado] = useState<number | null>(null)
 
   const carregar = useCallback(async () => {
     const { data } = await supabase.rpc('get_sale_stage33', { _sale_id: id })
     const det = (data as Detalhe) ?? null
     setD(det)
     if (det?.sale.customer_id) {
-      const { data: c } = await supabase.from('customers').select('id, name').eq('id', det.sale.customer_id).maybeSingle()
+      const { data: c } = await supabase.from('customers').select('id, name, phone, store_id').eq('id', det.sale.customer_id).maybeSingle()
       setCliente(c)
+      if (c) {
+        const { data: b } = await supabase.rpc('get_customer_balances', { _store_id: c.store_id })
+        const meu = ((b as { customer_id: string; balance: number }[]) ?? []).find((x) => x.customer_id === c.id)
+        setSaldoFiado(meu ? Number(meu.balance) : null)
+      }
     }
     setLoading(false)
   }, [id])
@@ -45,7 +54,12 @@ export default function VendaDetalhe() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <Link to="/vendas" className="text-sm text-brand-700 hover:underline">← Vendas</Link>
-      {nova && !cancelada && <Alert kind="ok">Venda #{d.sale.number} registrada. O estoque já foi atualizado.</Alert>}
+      {nova && !cancelada && (
+        <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+          <svg viewBox="0 0 24 24" className="nexo-check h-9 w-9 shrink-0 rounded-full bg-emerald-500 p-1.5" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+          <div className="text-sm"><div className="font-semibold text-emerald-800">Venda #{d.sale.number} registrada!</div><div className="text-emerald-700">O estoque já foi atualizado.</div></div>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -53,7 +67,18 @@ export default function VendaDetalhe() {
           <p className="text-sm text-muted">{new Date(d.sale.sold_at).toLocaleString('pt-BR')}
             {cliente && <> · Cliente: <Link to={`/fiado/${cliente.id}`} className="text-brand-700 hover:underline">{cliente.name}</Link></>}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          {!cancelada && (
+            <a href={abrirWhatsApp(textoComprovante({
+                loja: current?.name ?? '', numero: d.sale.number, data: d.sale.sold_at, cliente: cliente?.name,
+                itens: d.items, subtotal: d.sale.subtotal, desconto: d.sale.discount_total, total: d.sale.total,
+                pagamentos: d.payments, saldoFiado,
+              }), cliente?.phone)}
+              target="_blank" rel="noreferrer" onClick={() => toast('Abrindo o WhatsApp…')}
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50">
+              Enviar comprovante
+            </a>
+          )}
           {nova && <Button onClick={() => nav('/vendas/nova')}>+ Nova venda</Button>}
           {canManage && !cancelada && <Button variant="ghost" className="text-red-700 hover:bg-red-50" onClick={() => setCancelar(true)}>Cancelar venda</Button>}
         </div>
@@ -101,7 +126,7 @@ export default function VendaDetalhe() {
         )}
       </div>
 
-      {cancelar && <CancelarVenda saleId={d.sale.id} numero={d.sale.number} onClose={() => setCancelar(false)} onDone={() => { setCancelar(false); nav(`/vendas/${id}`, { replace: true, state: {} }); carregar() }} />}
+      {cancelar && <CancelarVenda saleId={d.sale.id} numero={d.sale.number} onClose={() => setCancelar(false)} onDone={() => { setCancelar(false); toast('Venda cancelada e itens devolvidos ao estoque'); nav(`/vendas/${id}`, { replace: true, state: {} }); carregar() }} />}
     </div>
   )
 }

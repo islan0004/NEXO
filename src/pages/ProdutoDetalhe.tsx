@@ -4,6 +4,7 @@ import { brl, labelVariant, parseNum, qtd, supabase, traduzErro, type Attrs } fr
 import { useStore } from '../lib/store'
 import { useCategorias } from '../lib/categories'
 import CategoriaSelect from '../components/CategoriaSelect'
+import { useToast } from '../lib/toast'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
 
 type Produto = { id: string; name: string; category_id: string | null; active: boolean }
@@ -25,6 +26,7 @@ export default function ProdutoDetalhe() {
   const { id } = useParams()
   const { current, canManage } = useStore()
   const { categorias, criar } = useCategorias(current?.id)
+  const toast = useToast()
   const [produto, setProduto] = useState<Produto | null>(null)
   const [variantes, setVariantes] = useState<Variante[]>([])
   const [movs, setMovs] = useState<Mov[]>([])
@@ -155,12 +157,12 @@ export default function ProdutoDetalhe() {
 
       {editProduto && (
         <EditarProduto produto={produto} categorias={categorias} criar={criar}
-          onClose={() => setEditProduto(false)} onSaved={() => { setEditProduto(false); carregar() }} />
+          onClose={() => setEditProduto(false)} onSaved={() => { setEditProduto(false); toast('Produto salvo'); carregar() }} />
       )}
-      {editVar && <EditarVariante v={editVar} temVariacoes={temVariacoes} onClose={() => setEditVar(null)} onSaved={() => { setEditVar(null); carregar() }} />}
-      {movVar && <MovimentarEstoque v={movVar} titulo={temVariacoes ? labelVariant(movVar.attributes) : produto.name} onClose={() => setMovVar(null)} onSaved={() => { setMovVar(null); carregar() }} />}
+      {editVar && <EditarVariante v={editVar} temVariacoes={temVariacoes} onClose={() => setEditVar(null)} onSaved={() => { setEditVar(null); toast('Alterações salvas'); carregar() }} />}
+      {movVar && <MovimentarEstoque v={movVar} titulo={temVariacoes ? labelVariant(movVar.attributes) : produto.name} onClose={() => setMovVar(null)} onSaved={() => { setMovVar(null); toast('Estoque atualizado'); carregar() }} />}
       {novaVar && <NovaVariante productId={produto.id} chaves={Object.keys(variantes[0]?.attributes ?? {})} base={variantes[0]}
-        onClose={() => setNovaVar(false)} onSaved={() => { setNovaVar(false); carregar() }} />}
+        onClose={() => setNovaVar(false)} onSaved={() => { setNovaVar(false); toast('Variação adicionada'); carregar() }} />}
     </div>
   )
 }
