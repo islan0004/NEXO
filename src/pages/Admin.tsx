@@ -84,7 +84,7 @@ export default function Admin() {
         <Kpi label="Atrasadas" valor={String(ov.past_due)} dica={`${ov.free} cortesia · ${ov.canceled} cancelada(s)`} alerta={ov.past_due > 0} />
         <Kpi label="Vendido pelas lojas (30 dias)" valor={brl(ov.gmv_30d)} dica={`${ov.sales_30d} venda(s) no sistema`} />
       </div>
-      {ov.settings.default_monthly_price === null && (
+      {ov.settings.default_monthly_price === null && Number(ov.mrr) === 0 && (
         <p className="text-sm text-muted">Nenhum preço definido ainda. A receita começa a contar quando você registrar o primeiro pagamento ou definir o preço em Configurações.</p>
       )}
 
@@ -94,7 +94,7 @@ export default function Admin() {
           <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar loja ou dono"
             className="w-56 rounded-xl border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500" />
         </div>
-        <table className="w-full min-w-[720px] text-sm">
+        <table className="hidden w-full text-sm md:table">
           <thead className="bg-brand-50/60 text-left text-xs uppercase tracking-wide text-muted">
             <tr>
               <th className="px-4 py-2 font-medium">Loja</th>
@@ -132,6 +132,34 @@ export default function Admin() {
             })}
           </tbody>
         </table>
+        <ul className="divide-y divide-brand-100 md:hidden">
+          {lista.map((l) => {
+            const s = situacao(l)
+            return (
+              <li key={l.store_id} className="space-y-2 px-4 py-3 text-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-medium">{l.store_name}</div>
+                    <div className="text-xs text-muted">{l.owner_name ?? '—'} · {l.owner_email ?? '—'}</div>
+                  </div>
+                  <Badge tone={s.tom}>{s.texto}</Badge>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div><div className="text-muted">Mensalidade</div><div className="font-medium">{l.monthly_price !== null ? brl(l.monthly_price) : '—'}</div></div>
+                  <div><div className="text-muted">Vendas 30d</div><div className="font-medium">{l.sales_30d} · {brl(l.gmv_30d)}</div></div>
+                  <div><div className="text-muted">Última venda</div><div className="font-medium">{l.last_sale_at ? dt(l.last_sale_at) : 'nunca'}</div></div>
+                </div>
+                {(l.notes || (l.status === 'active' && l.current_period_end)) && (
+                  <div className="text-xs text-muted">{l.status === 'active' && l.current_period_end ? `Pago até ${dt(l.current_period_end)}` : ''}{l.notes ? ` ${l.notes}` : ''}</div>
+                )}
+                <div className="flex gap-4">
+                  <button className="font-medium text-brand-700" onClick={() => setPagar(l)}>Registrar pagamento</button>
+                  <button className="font-medium text-brand-700" onClick={() => setEditar(l)}>Editar</button>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
       </Card>
 
       {editar && <EditarAssinatura loja={editar} onClose={() => setEditar(null)} onSaved={() => { setEditar(null); toast('Assinatura atualizada'); carregar() }} />}
