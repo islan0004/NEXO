@@ -78,3 +78,6 @@ begin
 end $$;
 revoke execute on function public.admin_stores() from public, anon;
 grant execute on function public.admin_stores() to authenticated;
+
+-- profiles usa permissão por coluna (só full_name). O usuário também pode mudar o próprio tema e o progresso do tutorial.
+grant update (theme, tour) on public.profiles to authenticated;

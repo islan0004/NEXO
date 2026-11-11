@@ -28,6 +28,7 @@ export function Tour() {
   const passos = PASSOS.filter((p) => !p.gestor || canManage)
   const [i, setI] = useState(0)
   const [rect, setRect] = useState<DOMRect | null>(null)
+  const [noMenu, setNoMenu] = useState(false)
   const ativo = !!perfil && !perfil.tour.done && !perfil.tour.global
   const passo = passos[i]
 
@@ -37,6 +38,7 @@ export function Tour() {
       const el = passo.alvos.map(visivel).find(Boolean) ?? null
       if (el) el.scrollIntoView({ block: 'nearest' })
       setRect(el ? el.getBoundingClientRect() : null)
+      setNoMenu(el?.dataset.tour === 'menu')
     }
     const t = setTimeout(medir, 80)
     window.addEventListener('resize', medir)
@@ -49,7 +51,7 @@ export function Tour() {
   const ok = () => (ultimo ? setTour({ ...perfil!.tour, global: true }) : setI(i + 1))
   const pular = () => setTour({ ...perfil!.tour, done: true, global: true })
 
-  return <Balao rect={rect} titulo={passo.titulo} texto={passo.texto} progresso={`${i + 1}/${passos.length}`} ok={ok} pular={pular} okTexto={ultimo ? 'Começar' : 'OK'} />
+  return <Balao rect={rect} titulo={passo.titulo} texto={noMenu ? `${passo.texto} Fica no Menu, aqui em cima.` : passo.texto} progresso={`${i + 1}/${passos.length}`} ok={ok} pular={pular} okTexto={ultimo ? 'Começar' : 'OK'} />
 }
 
 /** Dica de primeira visita em uma tela (aparece depois do tutorial geral). */
