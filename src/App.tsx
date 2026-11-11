@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Fiado from './pages/Fiado'
 import ClienteDetalhe from './pages/ClienteDetalhe'
 import Relatorios from './pages/Relatorios'
+import Admin from './pages/Admin'
 import Produtos from './pages/Produtos'
 import ProdutoDetalhe from './pages/ProdutoDetalhe'
 import Vendas from './pages/Vendas'
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/fiado" element={<Fiado />} />
           <Route path="/fiado/:id" element={<ClienteDetalhe />} />
           <Route path="/relatorios" element={<Relatorios />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       )}

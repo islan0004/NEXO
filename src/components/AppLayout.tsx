@@ -15,7 +15,7 @@ const nav = [
 ]
 
 export default function AppLayout() {
-  const { current, stores, select, canManage } = useStore()
+  const { current, stores, select, canManage, isAdmin, assinatura } = useStore()
   const { session } = useAuth()
   const [open, setOpen] = useState(false)
   const loc = useLocation()
@@ -46,6 +46,12 @@ export default function AppLayout() {
         <div className="rounded-xl bg-brand-50 px-3 py-2 text-sm font-medium text-brand-900">{current?.name}</div>
       )}
       {links}
+      {isAdmin && (
+        <NavLink to="/admin" onClick={() => setOpen(false)}
+          className={({ isActive }) => `block rounded-xl border border-brand-200 px-3 py-2 text-sm font-semibold transition ${isActive ? 'bg-brand-700 text-white' : 'text-brand-800 hover:bg-brand-50'}`}>
+          ⚙ Admin NEXO
+        </NavLink>
+      )}
       {app.disponivel && (
         <button onClick={async () => { if (app.ios) setDicaIos(true); else await app.instalar() }}
           className="rounded-xl border border-dashed border-brand-300 px-3 py-2.5 text-left text-sm text-brand-800 hover:bg-brand-50">
@@ -73,6 +79,7 @@ export default function AppLayout() {
           <Logo />
           <button onClick={() => setOpen(true)} className="rounded-lg px-3 py-1.5 text-sm font-medium text-brand-800 hover:bg-brand-100">Menu</button>
         </header>
+        {canManage && <AvisoAssinatura a={assinatura} />}
         <main key={loc.pathname} className="mx-auto w-full max-w-6xl flex-1 p-4 pb-24 md:p-8"><Outlet /></main>
       </div>
       {!loc.pathname.startsWith('/vendas/nova') && (
@@ -92,4 +99,23 @@ export default function AppLayout() {
       )}
     </div>
   )
+}
+
+function AvisoAssinatura({ a }: { a: import('../lib/store').Assinatura | null }) {
+  if (!a) return null
+  const dias = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000) : null)
+  if (a.status === 'trial') {
+    const d = dias(a.trial_ends_at)
+    if (d === null) return null
+    const vencido = d < 0
+    return (
+      <div className={`px-4 py-2 text-center text-sm ${vencido ? 'bg-red-50 text-red-700' : d <= 5 ? 'bg-amber-50 text-amber-800' : 'bg-brand-50 text-brand-800'}`}>
+        {vencido ? 'Seu período de teste terminou. Fale com a equipe NEXO para continuar usando.' : `Teste grátis: ${d === 0 ? 'último dia' : `${d} dia(s) restante(s)`}`}
+      </div>
+    )
+  }
+  if ((a.status === 'active' && a.current_period_end && dias(a.current_period_end)! < 0) || a.status === 'past_due') {
+    return <div className="bg-red-50 px-4 py-2 text-center text-sm text-red-700">Mensalidade em aberto. Fale com a equipe NEXO para regularizar.</div>
+  }
+  return null
 }

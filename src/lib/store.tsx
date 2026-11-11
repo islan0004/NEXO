@@ -12,7 +12,10 @@ type StoreCtx = {
   select: (id: string) => void
   reload: () => Promise<void>
   canManage: boolean
+  isAdmin: boolean
+  assinatura: Assinatura | null
 }
+export type Assinatura = { status: 'trial' | 'active' | 'past_due' | 'canceled' | 'free'; trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null }
 const Ctx = createContext<StoreCtx>(null as unknown as StoreCtx)
 const KEY = 'nexo.store'
 
@@ -23,6 +26,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try { return localStorage.getItem(KEY) } catch { return null }
   })
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [assinatura, setAssinatura] = useState<Assinatura | null>(null)
 
   const reload = useCallback(async () => {
     if (!session) { setStores([]); setLoading(false); return }
@@ -45,15 +50,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [session])
 
   useEffect(() => { reload() }, [reload])
+  useEffect(() => {
+    if (!session) return
+    supabase.rpc('is_platform_admin').then(({ data }) => setIsAdmin(data === true))
+  }, [session])
 
   const current = stores.find((s) => s.id === currentId) ?? stores[0] ?? null
+  const currentStoreId = current?.id
+  useEffect(() => {
+    if (!currentStoreId) return
+    supabase.rpc('get_my_subscription', { _store_id: currentStoreId }).then(({ data }) => setAssinatura((data as Assinatura) ?? null))
+  }, [currentStoreId])
   const select = (id: string) => {
     setCurrentId(id)
     try { localStorage.setItem(KEY, id) } catch { /* sem storage */ }
   }
 
   return (
-    <Ctx.Provider value={{ stores, current, loading, select, reload, canManage: current?.role === 'owner' || current?.role === 'manager' }}>
+    <Ctx.Provider value={{ stores, current, loading, select, reload, canManage: current?.role === 'owner' || current?.role === 'manager', isAdmin, assinatura }}>
       {children}
     </Ctx.Provider>
   )
