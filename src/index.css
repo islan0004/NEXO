@@ -34,3 +34,36 @@ main > * { animation: nexo-fade-up .25s ease-out }
 
 .pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)) }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }
+
+/* ===== Temas ===== */
+:root[data-theme="oceano"] {
+  --color-brand-50: #f0f9ff; --color-brand-100: #e0f2fe; --color-brand-200: #bae6fd; --color-brand-300: #7dd3fc; --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9; --color-brand-600: #0284c7; --color-brand-700: #0369a1; --color-brand-800: #075985; --color-brand-900: #0c4a6e;
+  --color-ink: #0f1e2e; --color-muted: #5d6b7a;
+}
+:root[data-theme="esmeralda"] {
+  --color-brand-50: #ecfdf5; --color-brand-100: #d1fae5; --color-brand-200: #a7f3d0; --color-brand-300: #6ee7b7; --color-brand-400: #34d399;
+  --color-brand-500: #10b981; --color-brand-600: #059669; --color-brand-700: #047857; --color-brand-800: #065f46; --color-brand-900: #064e3b;
+  --color-ink: #10231c; --color-muted: #5b6e66;
+}
+:root[data-theme="rose"] {
+  --color-brand-50: #fff1f2; --color-brand-100: #ffe4e6; --color-brand-200: #fecdd3; --color-brand-300: #fda4af; --color-brand-400: #fb7185;
+  --color-brand-500: #f43f5e; --color-brand-600: #e11d48; --color-brand-700: #be123c; --color-brand-800: #9f1239; --color-brand-900: #881337;
+  --color-ink: #2a1219; --color-muted: #7a6066;
+}
+/* Noir Dourado: fundo escuro, dourado como cor principal */
+:root[data-theme="noir"] {
+  color-scheme: dark;
+  --color-brand-50: #1b1710; --color-brand-100: #2a2418; --color-brand-200: #3d3522; --color-brand-300: #6b5a33; --color-brand-400: #9c8248;
+  --color-brand-500: #c2a25a; --color-brand-600: #cfae5f; --color-brand-700: #d4af37; --color-brand-800: #e3c25e; --color-brand-900: #f1d78a;
+  --color-white: #15120d; --color-ink: #f3ede1; --color-muted: #a99f8c;
+  --color-red-50: #2a1414; --color-red-200: #5c2626; --color-red-600: #f87171; --color-red-700: #fca5a5;
+  --color-emerald-50: #10241b; --color-emerald-200: #1f4d38; --color-emerald-300: #2f6b4f; --color-emerald-500: #34d399; --color-emerald-700: #6ee7b7; --color-emerald-800: #a7f3d0;
+  --color-amber-50: #2a2210; --color-amber-700: #fcd34d; --color-amber-800: #fde68a;
+  --color-gray-100: #24211b; --color-gray-600: #bdb5a6;
+}
+:root[data-theme="noir"] body { background: #0e0c09; }
+:root[data-theme="noir"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.8) sepia(1) saturate(2); }
+
+@keyframes nexo-step-in { from { opacity: 0; transform: translateX(14px) } to { opacity: 1; transform: none } }
+.nexo-step { animation: nexo-step-in .28s ease-out }

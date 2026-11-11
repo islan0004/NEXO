@@ -6,12 +6,15 @@ import { dataBR, periodo } from '../lib/periodo'
 import { abrirWhatsApp, textoResumoDia } from '../lib/mensagens'
 import { Card, Spinner } from '../components/ui'
 import type { Relatorio } from './Relatorios'
+import { usePerfil } from '../lib/perfil'
 
 type Receber = { total: number; overdue: number; customers_open: number; customers_overdue: number }
 type Item = { variant_id: string; product_id: string; product_name: string; attributes: Attrs; stock_quantity: number; min_stock: number; active: boolean }
 
 export default function Dashboard() {
   const { current, canManage } = useStore()
+  const { perfil } = usePerfil()
+  const primeiro = perfil?.full_name?.trim().split(' ')[0]
   const [mes, setMes] = useState<Relatorio | null>(null)
   const [dia, setDia] = useState<Relatorio | null>(null)
   const [receber, setReceber] = useState<Receber | null>(null)
@@ -60,10 +63,10 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Olá! Aqui está sua loja</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Olá{primeiro ? `, ${primeiro}` : ''}! Aqui está sua loja</h1>
           <p className="text-sm text-muted">{current?.name}</p>
         </div>
-        <Link to="/vendas/nova" className="rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-800">+ Nova venda</Link>
+        <Link to="/vendas/nova" data-tour="nova-venda" className="rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-800">+ Nova venda</Link>
       </div>
 
       {canManage && (
@@ -75,7 +78,7 @@ export default function Dashboard() {
             <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <a href={abrirWhatsApp(resumo())} target="_blank" rel="noreferrer"
+            <a href={abrirWhatsApp(resumo())} target="_blank" rel="noreferrer" data-tour="fechar-dia"
               className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50">
               Fechar o dia · enviar resumo no WhatsApp
             </a>

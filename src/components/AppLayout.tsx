@@ -5,13 +5,15 @@ import { useStore } from '../lib/store'
 import { useAuth } from '../lib/auth'
 import { useInstalar } from '../lib/instalar'
 import { Logo, Modal } from './ui'
+import { Tour } from './Tour'
 
 const nav = [
-  { to: '/', label: 'Início', end: true },
-  { to: '/produtos', label: 'Produtos e estoque' },
-  { to: '/vendas', label: 'Vendas' },
-  { to: '/fiado', label: 'Fiado' },
-  { to: '/relatorios', label: 'Relatórios', gestor: true },
+  { to: '/', label: 'Início', end: true, tour: 'inicio' },
+  { to: '/produtos', label: 'Produtos e estoque', tour: 'produtos' },
+  { to: '/vendas', label: 'Vendas', tour: 'vendas' },
+  { to: '/fiado', label: 'Fiado', tour: 'fiado' },
+  { to: '/relatorios', label: 'Relatórios', gestor: true, tour: 'relatorios' },
+  { to: '/duvidas', label: 'Dúvidas', tour: 'duvidas' },
 ]
 
 export default function AppLayout() {
@@ -26,7 +28,7 @@ export default function AppLayout() {
   const links = (
     <nav className="space-y-1">
       {nav.filter((n) => !('gestor' in n) || canManage).map((n) => (
-        <NavLink key={n.to} to={n.to} end={n.end} onClick={() => setOpen(false)}
+        <NavLink key={n.to} to={n.to} end={n.end} onClick={() => setOpen(false)} data-tour={`nav-${n.tour}`}
           className={({ isActive }) => `block rounded-xl px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-brand-100 text-brand-800' : 'text-muted hover:bg-brand-50 hover:text-ink'}`}>
           {n.label}
         </NavLink>
@@ -77,17 +79,18 @@ export default function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-brand-100 bg-white px-4 py-3 md:hidden">
           <Logo />
-          <button onClick={() => setOpen(true)} className="rounded-lg px-3 py-1.5 text-sm font-medium text-brand-800 hover:bg-brand-100">Menu</button>
+          <button data-tour="menu" onClick={() => setOpen(true)} className="rounded-lg px-3 py-1.5 text-sm font-medium text-brand-800 hover:bg-brand-100">Menu</button>
         </header>
         {canManage && <AvisoAssinatura a={assinatura} />}
         <main key={loc.pathname} className="mx-auto w-full max-w-6xl flex-1 p-4 pb-24 md:p-8"><Outlet /></main>
       </div>
       {!loc.pathname.startsWith('/vendas/nova') && (
-        <Link to="/vendas/nova" className="fixed bottom-5 right-5 z-30 flex items-center gap-2 rounded-full bg-brand-700 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-700/30 transition active:scale-95 md:hidden"
+        <Link to="/vendas/nova" data-tour="vender-fab" className="fixed bottom-5 right-5 z-30 flex items-center gap-2 rounded-full bg-brand-700 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-700/30 transition active:scale-95 md:hidden"
           style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>
           <span className="text-lg leading-none">+</span> Vender
         </Link>
       )}
+      <Tour />
       {dicaIos && (
         <Modal title="Instalar o NEXO no iPhone" onClose={() => setDicaIos(false)}>
           <ol className="list-decimal space-y-2 pl-5 text-sm">

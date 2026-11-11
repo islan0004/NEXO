@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react
 import { useNavigate } from 'react-router-dom'
 import { brl, supabase, traduzErro } from '../lib/supabase'
 import { useStore } from '../lib/store'
+import { Dica } from '../components/Tour'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
 
 export type Saldo = {
@@ -43,6 +44,7 @@ export default function Fiado() {
 
   return (
     <div className="space-y-5">
+      <Dica id="fiado" titulo="Fiado sem caderninho" texto="Na venda, escolha o pagamento “Fiado” e o cliente. Aqui você vê quem deve, quanto e desde quando, registra pagamentos e cobra pelo WhatsApp." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Fiado</h1>

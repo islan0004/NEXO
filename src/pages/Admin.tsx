@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react
 import { brl, parseNum, supabase, traduzErro } from '../lib/supabase'
 import { useToast } from '../lib/toast'
 import { Alert, Badge, Button, Card, Field, Modal, Select, Spinner } from '../components/ui'
+import { SEGMENTOS } from './Onboarding'
+
+const perfilLoja = (l: Loja) => [SEGMENTOS.find((x) => x.id === l.segment)?.label, l.onboarding?.faturamento].filter(Boolean).join(' · ')
 
 type Overview = {
   users: number; users_7d: number; stores: number; stores_30d: number; active_7d: number
@@ -14,6 +17,7 @@ type Loja = {
   store_id: string; store_name: string; owner_name: string | null; owner_email: string | null; created_at: string
   status: Status | null; trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null; notes: string | null
   members: number; products: number; sales_30d: number; gmv_30d: number; last_sale_at: string | null; last_payment_at: string | null; paid_total: number
+  segment: string | null; onboarding: { faturamento?: string } | null
 }
 
 const STATUS: Record<Status, string> = { trial: 'Em teste', active: 'Pagante', past_due: 'Atrasado', canceled: 'Cancelado', free: 'Cortesia' }
@@ -114,6 +118,7 @@ export default function Admin() {
                     <div className="font-medium">{l.store_name}</div>
                     <div className="text-xs text-muted">{l.owner_name ?? '—'} · {l.owner_email ?? '—'}</div>
                     <div className="text-xs text-muted">desde {dt(l.created_at)}{l.notes ? ` · ${l.notes}` : ''}</div>
+                    {perfilLoja(l) && <div className="text-xs text-brand-700">{perfilLoja(l)}</div>}
                   </td>
                   <td className="px-4 py-3">
                     <Badge tone={s.tom}>{s.texto}</Badge>
@@ -141,6 +146,7 @@ export default function Admin() {
                   <div>
                     <div className="font-medium">{l.store_name}</div>
                     <div className="text-xs text-muted">{l.owner_name ?? '—'} · {l.owner_email ?? '—'}</div>
+                    {perfilLoja(l) && <div className="text-xs text-brand-700">{perfilLoja(l)}</div>}
                   </div>
                   <Badge tone={s.tom}>{s.texto}</Badge>
                 </div>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { brl, labelVariant, qtd, supabase, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
+import { Dica } from '../components/Tour'
 import { useCategorias } from '../lib/categories'
 import { Badge, Button, Card, Spinner } from '../components/ui'
 import NovoProduto from './NovoProduto'
@@ -72,6 +73,7 @@ export default function Produtos() {
 
   return (
     <div className="space-y-5">
+      <Dica id="produtos" titulo="Produtos e estoque" texto="Toque em “+ Novo produto” para cadastrar. Informe o custo: é com ele que o NEXO calcula o lucro. Produtos com estoque abaixo do mínimo ficam em vermelho." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Produtos e estoque</h1>

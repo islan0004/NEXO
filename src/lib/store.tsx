@@ -3,7 +3,7 @@ import { supabase } from './supabase'
 import { useAuth } from './auth'
 
 export type Role = 'owner' | 'manager' | 'seller'
-export type Store = { id: string; name: string; role: Role }
+export type Store = { id: string; name: string; role: Role; segment: string | null }
 
 type StoreCtx = {
   stores: Store[]
@@ -34,14 +34,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     const { data, error } = await supabase
       .from('store_members')
-      .select('role, active, stores(id, name)')
+      .select('role, active, stores(id, name, segment)')
       .eq('user_id', session.user.id)
       .eq('active', true)
     if (!error && data) {
       const list = data
         .map((m) => {
-          const s = m.stores as unknown as { id: string; name: string } | null
-          return s ? { id: s.id, name: s.name, role: m.role as Role } : null
+          const s = m.stores as unknown as { id: string; name: string; segment: string | null } | null
+          return s ? { id: s.id, name: s.name, role: m.role as Role, segment: s.segment } : null
         })
         .filter(Boolean) as Store[]
       setStores(list)

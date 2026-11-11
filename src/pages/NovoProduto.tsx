@@ -2,6 +2,16 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { parseNum, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import type { Categoria } from '../lib/categories'
 import CategoriaSelect from '../components/CategoriaSelect'
+import { useStore } from '../lib/store'
+
+// Sugestões conforme o segmento escolhido no quiz inicial
+const POR_SEGMENTO: Record<string, { exemplo: string; variacoes: boolean; atributos: { nome: string; valores: string }[] }> = {
+  roupas: { exemplo: 'Ex.: Camisa polo básica', variacoes: true, atributos: [{ nome: 'Tamanho', valores: 'P, M, G, GG' }, { nome: 'Cor', valores: '' }] },
+  calcados: { exemplo: 'Ex.: Tênis casual', variacoes: true, atributos: [{ nome: 'Numeração', valores: '34, 35, 36, 37, 38, 39, 40' }, { nome: 'Cor', valores: '' }] },
+  semijoias: { exemplo: 'Ex.: Brinco argola dourada', variacoes: false, atributos: [{ nome: 'Banho', valores: 'Dourado, Prata' }, { nome: 'Tamanho', valores: '' }] },
+  cosmeticos: { exemplo: 'Ex.: Perfume floral 100ml', variacoes: false, atributos: [{ nome: 'Volume', valores: '' }, { nome: 'Fragrância', valores: '' }] },
+}
+const PADRAO = { exemplo: 'Ex.: Nome do produto', variacoes: false, atributos: [{ nome: 'Tamanho', valores: '' }, { nome: 'Cor', valores: '' }] }
 import { Alert, Button, Field, Modal, cellInput } from '../components/ui'
 
 type Atributo = { nome: string; valores: string }
@@ -29,15 +39,17 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
   onClose: () => void
   onCreated: (productId: string) => void
 }) {
+  const { current } = useStore()
+  const sugestao = POR_SEGMENTO[current?.segment ?? ''] ?? PADRAO
   const [nome, setNome] = useState('')
   const [categoria, setCategoria] = useState('')
-  const [comVariacoes, setComVariacoes] = useState(false)
+  const [comVariacoes, setComVariacoes] = useState(sugestao.variacoes)
   const [sku, setSku] = useState('')
   const [custo, setCusto] = useState('')
   const [preco, setPreco] = useState('')
   const [estoque, setEstoque] = useState('')
   const [minimo, setMinimo] = useState('')
-  const [atributos, setAtributos] = useState<Atributo[]>([{ nome: 'Tamanho', valores: '' }, { nome: 'Cor', valores: '' }])
+  const [atributos, setAtributos] = useState<Atributo[]>(sugestao.atributos)
   const [linhas, setLinhas] = useState<Record<string, LinhaVar>>({})
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
@@ -86,7 +98,7 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
     <Modal title="Novo produto" onClose={onClose} wide={comVariacoes}>
       <form onSubmit={onSubmit} className="space-y-4">
         {erro && <Alert>{erro}</Alert>}
-        <Field label="Nome do produto" required value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex.: Brinco argola dourada" />
+        <Field label="Nome do produto" required value={nome} onChange={(e) => setNome(e.target.value)} placeholder={sugestao.exemplo} />
         <CategoriaSelect categorias={categorias} value={categoria} onChange={setCategoria} criar={criarCategoria} />
 
         <div className="grid grid-cols-3 gap-3">

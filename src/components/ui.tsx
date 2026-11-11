@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAt
 export function Logo({ className = '' }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <img src="/favicon.svg" alt="" className="h-8 w-8" />
+      <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden><rect width="32" height="32" rx="8" fill="var(--color-brand-700)" /><path d="M10 22V10l12 12V10" stroke="var(--color-white)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
       <span className="text-xl font-semibold tracking-tight text-brand-900">NEXO</span>
     </div>
   )

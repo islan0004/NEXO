@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { METODOS, brl, labelVariant, parseNum, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
+import { Dica } from '../components/Tour'
 import { Alert, Button, Card, Spinner, cellInput } from '../components/ui'
 import ClienteSelect, { type Cliente } from '../components/ClienteSelect'
 
@@ -110,6 +111,7 @@ export default function NovaVenda() {
 
   return (
     <div className="space-y-5">
+      <Dica id="nova-venda" titulo="Registrando uma venda" texto="Busque o produto pelo nome, código, tamanho ou cor. Ajuste quantidade e preço se precisar, escolha a forma de pagamento e toque em “Finalizar venda”." />
       <Link to="/vendas" className="text-sm text-brand-700 hover:underline">← Vendas</Link>
       <h1 className="text-2xl font-semibold tracking-tight">Nova venda</h1>
 

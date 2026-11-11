@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { METODOS, brl, labelVariant, pct, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
+import { Dica } from '../components/Tour'
 import { dataBR, periodo, type Atalho } from '../lib/periodo'
 import { Alert, Card, Spinner, cellInput } from '../components/ui'
 
@@ -46,6 +47,7 @@ export default function Relatorios() {
 
   return (
     <div className="space-y-5">
+      <Dica id="relatorios" titulo="Relatórios" texto="Escolha o período nos atalhos ou nas datas. Você vê faturamento, lucro, ticket médio, os produtos que mais vendem e as formas de pagamento." />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Relatórios</h1>
         <p className="text-sm text-muted">Faturamento e lucro por período ({dataBR(de)} a {dataBR(ate)})</p>

@@ -5,6 +5,10 @@ import { Spinner } from './components/ui'
 import AppLayout from './components/AppLayout'
 import { Cadastro, Entrar, EsqueciSenha, RedefinirSenha } from './pages/Auth'
 import CriarLoja from './pages/CriarLoja'
+import Onboarding from './pages/Onboarding'
+import SoTema from './pages/SoTema'
+import Duvidas from './pages/Duvidas'
+import { usePerfil } from './lib/perfil'
 import Dashboard from './pages/Dashboard'
 import Fiado from './pages/Fiado'
 import ClienteDetalhe from './pages/ClienteDetalhe'
@@ -17,8 +21,14 @@ import NovaVenda from './pages/NovaVenda'
 import VendaDetalhe from './pages/VendaDetalhe'
 
 function Protegido() {
-  const { stores, loading } = useStore()
-  if (loading) return <Spinner />
+  const { stores, current, loading } = useStore()
+  const { perfil, loading: carregandoPerfil } = usePerfil()
+  if (loading || carregandoPerfil) return <Spinner />
+  // Quiz + tema na primeira entrada (novos e antigos). Quem não é dono pula o quiz.
+  if (perfil && !perfil.onboarding_completed_at) {
+    if (stores.length === 0 || current?.role === 'owner') return <Onboarding />
+    return <SoTema />
+  }
   if (stores.length === 0) return <CriarLoja />
   return <AppLayout />
 }
@@ -51,6 +61,7 @@ export default function App() {
           <Route path="/fiado/:id" element={<ClienteDetalhe />} />
           <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/duvidas" element={<Duvidas />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       )}

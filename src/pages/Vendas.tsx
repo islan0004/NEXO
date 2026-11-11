@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { brl, supabase } from '../lib/supabase'
 import { useStore } from '../lib/store'
+import { Dica } from '../components/Tour'
 import { Badge, Button, Card, Spinner } from '../components/ui'
 
 type Venda = {
@@ -32,6 +33,7 @@ export default function Vendas() {
 
   return (
     <div className="space-y-5">
+      <Dica id="vendas" titulo="Histórico de vendas" texto="Aqui ficam todas as vendas. Toque em uma para ver os detalhes, enviar o comprovante pelo WhatsApp ou cancelar." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Vendas</h1>
