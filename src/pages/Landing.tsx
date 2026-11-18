@@ -4,6 +4,7 @@ import { brl, supabase } from '../lib/supabase'
 import { PLANOS } from '../lib/planos'
 import { abrirWhatsApp } from '../lib/mensagens'
 import { Logo } from '../components/ui'
+import { usarTemaDaMarca } from '../lib/temas'
 
 type Precos = { start: number; pro: number; black: number; trial_days: number; whatsapp: string | null }
 
@@ -51,6 +52,7 @@ function Secao({ id, titulo, sub, children, className = '' }: { id?: string; tit
 export default function Landing() {
   const [precos, setPrecos] = useState<Precos | null>(null)
   const [aberta, setAberta] = useState<number | null>(0)
+  useEffect(() => usarTemaDaMarca(), [])
   useEffect(() => {
     document.title = 'Komando — vendas, estoque, fiado e lucro da sua loja'
     supabase.rpc('get_public_pricing').then(({ data }) => setPrecos(data as Precos))

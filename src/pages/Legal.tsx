@@ -1,10 +1,12 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Logo } from '../components/ui'
+import { usarTemaDaMarca } from '../lib/temas'
 
 const ATUALIZADO = '18/11/2026'
 
 function Pagina({ titulo, children }: { titulo: string; children: ReactNode }) {
+  useEffect(() => usarTemaDaMarca(), [])
   return (
     <div className="min-h-full bg-white">
       <div className="mx-auto max-w-2xl px-5 py-8">

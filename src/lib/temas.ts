@@ -20,3 +20,14 @@ export function aplicarTema(t: Tema) {
 export function temaSalvo(): Tema {
   try { return (localStorage.getItem(KEY) as Tema) || 'nexo' } catch { return 'nexo' }
 }
+
+/** Páginas públicas (landing, termos) usam sempre o roxo da marca, sem trocar o tema salvo da loja. */
+export function usarTemaDaMarca() {
+  document.documentElement.dataset.theme = 'nexo'
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', TEMAS[0].meta)
+  return () => {
+    const t = temaSalvo()
+    document.documentElement.dataset.theme = t
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', (TEMAS.find((x) => x.id === t) ?? TEMAS[0]).meta)
+  }
+}
