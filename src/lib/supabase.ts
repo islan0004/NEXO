@@ -36,6 +36,10 @@ const messages: Record<string, string> = {
   customer_required: 'Para vender fiado, escolha o cliente.',
   invalid_customer: 'Cliente inválido ou inativo.',
   'plan_required:pro': 'Esse recurso faz parte do plano Pro. Veja em Planos.',
+  'plan_required:black': 'Esse recurso faz parte do plano Black. Veja em Planos.',
+  loyalty_not_ready: 'O cliente ainda não completou o cartão.',
+  reward_required: 'Escreva qual é o prêmio do cartão.',
+  invalid_every: 'O cartão precisa ter entre 2 e 50 compras.',
   plan_user_limit: 'O plano da loja já está no limite de usuários.',
   slug_taken: 'Esse endereço já é de outra loja.',
   amount_exceeds_balance: 'O valor é maior que a dívida do cliente.',
@@ -67,7 +71,8 @@ export const brl = (v: number | string | null | undefined) =>
 export function parseNum(s: string): number {
   const t = s.trim()
   if (!t) return 0
-  const n = t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t
+  // padrão BR: vírgula decimal; ponto com grupos de 3 dígitos é milhar (15.000 = 15000)
+  const n = t.includes(',') || /^-?\d{1,3}(\.\d{3})+$/.test(t) ? t.replace(/\./g, '').replace(',', '.') : t
   return /^-?\d+(\.\d+)?$/.test(n) ? Number(n) : NaN
 }
 

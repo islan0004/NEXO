@@ -102,7 +102,7 @@ export default function Fiado() {
 
 export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
   storeId: string
-  cliente?: { id: string; name: string; phone: string | null; notes: string | null; active: boolean }
+  cliente?: { id: string; name: string; phone: string | null; notes: string | null; active: boolean; birthday?: string | null }
   onClose: () => void
   onSaved: (id: string) => void
 }) {
@@ -110,14 +110,19 @@ export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
   const [tel, setTel] = useState(cliente?.phone ?? '')
   const [obs, setObs] = useState(cliente?.notes ?? '')
   const [ativo, setAtivo] = useState(cliente?.active ?? true)
+  const [diaN, setDiaN] = useState(cliente?.birthday ? String(Number(cliente.birthday.slice(8, 10))) : '')
+  const [mesN, setMesN] = useState(cliente?.birthday ? String(Number(cliente.birthday.slice(5, 7))) : '')
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault(); setErro('')
     if (!nome.trim()) return setErro('Informe o nome.')
+    if (!!diaN !== !!mesN) return setErro('Escolha o dia e o mês do aniversário.')
+    const birthday = diaN && mesN ? `2000-${mesN.padStart(2, '0')}-${diaN.padStart(2, '0')}` : null
+    if (birthday && new Date(`${birthday}T12:00:00`).getDate() !== Number(diaN)) return setErro('Essa data não existe.')
     setLoading(true)
-    const dados = { name: nome.trim(), phone: tel.trim() || null, notes: obs.trim() || null, active: ativo }
+    const dados = { name: nome.trim(), phone: tel.trim() || null, notes: obs.trim() || null, active: ativo, birthday }
     const res = cliente
       ? await supabase.from('customers').update(dados).eq('id', cliente.id).select('id').single()
       : await supabase.from('customers').insert({ ...dados, store_id: storeId }).select('id').single()
@@ -132,6 +137,17 @@ export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
         {erro && <Alert>{erro}</Alert>}
         <Field label="Nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
         <Field label="WhatsApp com DDD" inputMode="tel" value={tel} onChange={(e) => setTel(e.target.value)} placeholder="(82) 99999-0000" />
+        <div>
+          <span className="mb-1 block text-sm font-medium">Aniversário (opcional)</span>
+          <div className="grid grid-cols-2 gap-3">
+            <select value={diaN} onChange={(e) => setDiaN(e.target.value)} className="rounded-xl border border-brand-200 bg-white px-3 py-2.5 text-sm">
+              <option value="">Dia</option>{Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
+            </select>
+            <select value={mesN} onChange={(e) => setMesN(e.target.value)} className="rounded-xl border border-brand-200 bg-white px-3 py-2.5 text-sm">
+              <option value="">Mês</option>{MESES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+            </select>
+          </div>
+        </div>
         <Field label="Observações" value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Ex.: paga todo dia 10" />
         {cliente && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} /> Cliente ativo (pode comprar fiado)</label>}
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Salvar</Button></div>
@@ -139,3 +155,5 @@ export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
     </Modal>
   )
 }
+
+const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']

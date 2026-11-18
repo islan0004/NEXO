@@ -8,6 +8,7 @@ import { Card, Spinner } from '../components/ui'
 import type { Relatorio } from './Relatorios'
 import { usePerfil } from '../lib/perfil'
 import { usePlano } from '../lib/planos'
+import MetaDoMes from '../components/MetaDoMes'
 
 type Receber = { total: number; overdue: number; customers_open: number; customers_overdue: number }
 type Item = { variant_id: string; product_id: string; product_name: string; attributes: Attrs; stock_quantity: number; min_stock: number; active: boolean }
@@ -22,6 +23,7 @@ export default function Dashboard() {
   const [receber, setReceber] = useState<Receber | null>(null)
   const [catalogo, setCatalogo] = useState<Item[]>([])
   const [recebidoHoje, setRecebidoHoje] = useState(0)
+  const [meta, setMeta] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,8 +37,10 @@ export default function Dashboard() {
       canManage ? supabase.rpc('get_sales_report', { _store_id: current.id, _from: h.de, _to: h.ate }) : nada,
       supabase.rpc('get_product_catalog', { _store_id: current.id }),
       supabase.rpc('get_receivables_summary', { _store_id: current.id }),
+      canManage ? supabase.from('store_settings').select('monthly_goal').eq('store_id', current.id).single() : nada,
       supabase.from('customer_payments').select('amount').eq('store_id', current.id).gte('paid_at', new Date(`${h.de}T00:00:00-03:00`).toISOString()),
-    ]).then(([rm, rh, c, r, cp]) => {
+    ]).then(([rm, rh, c, r, ms, cp]) => {
+      setMeta((ms.data as { monthly_goal: number | null } | null)?.monthly_goal ?? null)
       setRecebidoHoje(((cp.data as { amount: number }[]) ?? []).reduce((a, x) => a + Number(x.amount), 0))
       if (!alive) return
       setMes((rm.data as Relatorio) ?? null)
@@ -81,6 +85,9 @@ export default function Dashboard() {
               : <Stat label="Lucro bruto do mês" value={brl(mes?.gross_profit)} hint={`Margem ${pct(margem)}`} green />}
             <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
           </div>
+          {pode('meta') ? <MetaDoMes faturado={Number(mes?.revenue ?? 0)} meta={meta} onSalvo={setMeta} /> : (
+            <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Meta do mês</strong> · disponível no NEXO Pro</Link>
+          )}
           <div className="flex flex-wrap items-center gap-3">
             <a href={abrirWhatsApp(resumo())} target="_blank" rel="noreferrer" data-tour="fechar-dia"
               className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50">

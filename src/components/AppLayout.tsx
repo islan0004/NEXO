@@ -12,6 +12,7 @@ const nav = [
   { to: '/produtos', label: 'Produtos e estoque', tour: 'produtos' },
   { to: '/vendas', label: 'Vendas', tour: 'vendas' },
   { to: '/fiado', label: 'Fiado', tour: 'fiado' },
+  { to: '/clientes', label: 'Clientes', tour: 'clientes' },
   { to: '/despesas', label: 'Despesas', gestor: true, tour: 'despesas' },
   { to: '/relatorios', label: 'Relatórios', gestor: true, tour: 'relatorios' },
   { to: '/catalogo', label: 'Catálogo online', gestor: true, tour: 'catalogo' },

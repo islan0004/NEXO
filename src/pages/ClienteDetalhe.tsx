@@ -5,8 +5,9 @@ import { useStore } from '../lib/store'
 import { Alert, Badge, Button, Card, Field, Modal, Select, Spinner } from '../components/ui'
 import { ClienteForm, atrasado, type Saldo } from './Fiado'
 import { useToast } from '../lib/toast'
+import { CartaoCliente } from './Clientes'
 
-type Cliente = { id: string; name: string; phone: string | null; notes: string | null; active: boolean }
+type Cliente = { id: string; name: string; phone: string | null; notes: string | null; active: boolean; birthday: string | null }
 type Lanc = { kind: 'charge' | 'payment'; ref_id: string; sale_number: number | null; amount: number; method: string; note: string | null; happened_at: string; canceled: boolean }
 
 export default function ClienteDetalhe() {
@@ -23,7 +24,7 @@ export default function ClienteDetalhe() {
   const carregar = useCallback(async () => {
     if (!id || !current) return
     const [c, s, e] = await Promise.all([
-      supabase.from('customers').select('id, name, phone, notes, active').eq('id', id).eq('store_id', current.id).maybeSingle(),
+      supabase.from('customers').select('id, name, phone, notes, active, birthday').eq('id', id).eq('store_id', current.id).maybeSingle(),
       supabase.rpc('get_customer_balances', { _store_id: current.id }),
       supabase.rpc('get_customer_statement', { _customer_id: id }),
     ])
@@ -49,7 +50,7 @@ export default function ClienteDetalhe() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">{cliente.name}{!cliente.active && <Badge tone="gray">Inativo</Badge>}</h1>
-          <p className="text-sm text-muted">{cliente.phone ?? 'Sem telefone'}{cliente.notes ? ` · ${cliente.notes}` : ''}</p>
+          <p className="text-sm text-muted">{cliente.phone ?? 'Sem telefone'}{cliente.birthday ? ` · 🎂 ${Number(cliente.birthday.slice(8, 10))}/${cliente.birthday.slice(5, 7)}` : ''}{cliente.notes ? ` · ${cliente.notes}` : ''}</p>
         </div>
         <Button variant="ghost" onClick={() => setEditar(true)}>Editar</Button>
       </div>
@@ -70,6 +71,8 @@ export default function ClienteDetalhe() {
           </div>
         </div>
       </Card>
+
+      <CartaoCliente customerId={cliente.id} />
 
       <Card className="p-0">
         <h2 className="px-4 py-3 font-semibold">Extrato</h2>

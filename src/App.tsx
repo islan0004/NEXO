@@ -21,6 +21,7 @@ import Vendas from './pages/Vendas'
 import NovaVenda from './pages/NovaVenda'
 import VendaDetalhe from './pages/VendaDetalhe'
 import Despesas from './pages/Despesas'
+import Clientes from './pages/Clientes'
 import Equipe from './pages/Equipe'
 import Planos from './pages/Planos'
 import Catalogo from './pages/Catalogo'
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/duvidas" element={<Duvidas />} />
           <Route path="/despesas" element={<Despesas />} />
+          <Route path="/clientes" element={<Clientes />} />
           <Route path="/equipe" element={<Equipe />} />
           <Route path="/planos" element={<Planos />} />
           <Route path="/catalogo" element={<Catalogo />} />

@@ -5,6 +5,7 @@ import { Dica } from '../components/Tour'
 import { dataBR, periodo, type Atalho } from '../lib/periodo'
 import { Alert, Card, Spinner, cellInput } from '../components/ui'
 import { Link } from 'react-router-dom'
+import ProdutosParados from '../components/ProdutosParados'
 import { usePlano } from '../lib/planos'
 
 export type Relatorio = {
@@ -155,6 +156,9 @@ export default function Relatorios() {
             </Card>
           </div>
         </>
+      )}
+      {pode('parados') ? <ProdutosParados /> : (
+        <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Produtos parados</strong> · disponível no NEXO Pro</Link>
       )}
     </div>
   )

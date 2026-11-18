@@ -4,6 +4,7 @@ import { METODOS, brl, labelVariant, pct, qtd, supabase, traduzErro, type Attrs 
 import { useStore } from '../lib/store'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
 import { abrirWhatsApp, textoComprovante } from '../lib/mensagens'
+import { CartaoCliente } from './Clientes'
 import { useToast } from '../lib/toast'
 
 type Detalhe = {
@@ -83,6 +84,8 @@ export default function VendaDetalhe() {
           {canManage && !cancelada && <Button variant="ghost" className="text-red-700 hover:bg-red-50" onClick={() => setCancelar(true)}>Cancelar venda</Button>}
         </div>
       </div>
+
+      {cliente && !cancelada && <CartaoCliente customerId={cliente.id} compacto />}
 
       {cancelada && d.cancellation && (
         <Alert>Cancelada em {new Date(d.cancellation.created_at).toLocaleString('pt-BR')}{d.cancellation.responsible_name ? ` por ${d.cancellation.responsible_name}` : ''}{d.cancellation.reason ? ` — ${d.cancellation.reason}` : ''}. Os itens voltaram para o estoque.</Alert>
