@@ -21,6 +21,7 @@ export type Assinatura = {
   status: 'trial' | 'active' | 'past_due' | 'canceled' | 'free'; plan: Plano; effective_plan: Plano
   trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null
   prices: Record<Plano, number>; support_whatsapp: string | null
+  access?: 'ok' | 'aviso' | 'bloqueado'; has_billing?: boolean; pending_plan?: Plano | null; invoice_url?: string | null; invoice_due?: string | null
 }
 const Ctx = createContext<StoreCtx>(null as unknown as StoreCtx)
 const KEY = 'nexo.store'

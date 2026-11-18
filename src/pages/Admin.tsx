@@ -325,9 +325,32 @@ function Configuracoes({ atual, onClose, onSaved }: { atual: Overview['settings'
           <Field label="Black (R$)" inputMode="decimal" value={pBlack} onChange={(e) => setPBlack(e.target.value)} />
         </div>
         <Field label="Seu WhatsApp de vendas" inputMode="tel" value={zap} onChange={(e) => setZap(e.target.value)} placeholder="(82) 99999-0000" />
-        <p className="text-xs text-muted">Os preços aparecem na tela Planos de cada loja. O botão “Quero este plano” abre conversa com esse WhatsApp.</p>
+        <p className="text-xs text-muted">Os preços aparecem na tela Planos e são usados na cobrança automática.</p>
+        <ConectarAsaas />
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Salvar</Button></div>
       </form>
     </Modal>
+  )
+}
+
+function ConectarAsaas() {
+  const [res, setRes] = useState<{ ok: boolean; msg: string } | null>(null)
+  const [loading, setLoading] = useState(false)
+  async function testar() {
+    setLoading(true); setRes(null)
+    const { data, error } = await supabase.functions.invoke('asaas?acao=configurar', { body: {} })
+    setLoading(false)
+    if (error && !data) return setRes({ ok: false, msg: 'Não consegui falar com a função de cobrança.' })
+    if (data?.ok) return setRes({ ok: true, msg: `Conectado ao Asaas (${data.ambiente}). Aviso de pagamento configurado.` })
+    setRes({ ok: false, msg: data?.error ?? 'Falhou.' })
+  }
+  return (
+    <div className="rounded-xl border border-brand-100 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-sm font-medium">Cobrança automática (Asaas)</div>
+        <Button type="button" variant="ghost" loading={loading} onClick={testar}>Testar conexão</Button>
+      </div>
+      {res && <p className={`mt-2 text-xs ${res.ok ? 'text-emerald-700' : 'text-red-600'}`}>{res.ok ? '✓ ' : ''}{res.msg}</p>}
+    </div>
   )
 }

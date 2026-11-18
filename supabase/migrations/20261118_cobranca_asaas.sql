@@ -1,0 +1,4 @@
+-- Aplicado via MCP como "cobranca_asaas": colunas asaas_* / pending_plan / invoice_* em store_subscriptions,
+-- tabela billing_events, função store_access (ok | aviso | bloqueado), get_my_subscription com access/invoice.
+-- platform_payments.created_by passou a aceitar null (pagamentos registrados pelo webhook).
+-- Edge Function: supabase/functions/asaas (verify_jwt = false; autentica sozinha).

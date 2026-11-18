@@ -89,9 +89,13 @@ export default function AppLayout() {
           <button data-tour="menu" onClick={() => setOpen(true)} className="rounded-lg px-3 py-1.5 text-sm font-medium text-brand-800 hover:bg-brand-100">Menu</button>
         </header>
         {canManage && <AvisoAssinatura a={assinatura} />}
-        <main key={loc.pathname} className="mx-auto w-full max-w-6xl flex-1 p-4 pb-24 md:p-8"><Outlet /></main>
+        <main key={loc.pathname} className="mx-auto w-full max-w-6xl flex-1 p-4 pb-24 md:p-8">
+          {assinatura?.access === 'bloqueado' && !isAdmin && !['/planos', '/duvidas'].includes(loc.pathname)
+            ? <Bloqueio dono={current?.role === 'owner'} a={assinatura} />
+            : <Outlet />}
+        </main>
       </div>
-      {!loc.pathname.startsWith('/vendas/nova') && (
+      {!loc.pathname.startsWith('/vendas/nova') && assinatura?.access !== 'bloqueado' && (
         <Link to="/vendas/nova" data-tour="vender-fab" className="fixed bottom-5 right-5 z-30 flex items-center gap-2 rounded-full bg-brand-700 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-700/30 transition active:scale-95 md:hidden"
           style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>
           <span className="text-lg leading-none">+</span> Vender
@@ -113,19 +117,45 @@ export default function AppLayout() {
 
 function AvisoAssinatura({ a }: { a: import('../lib/store').Assinatura | null }) {
   if (!a) return null
-  const dias = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000) : null)
+  const dias = (iso: string | null | undefined) => (iso ? Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000) : null)
+  const pagar = a.invoice_url
+    ? <a href={a.invoice_url} target="_blank" rel="noreferrer" className="ml-1 font-semibold underline">Pagar agora</a>
+    : <Link to="/planos" className="ml-1 font-semibold underline">Ver planos</Link>
   if (a.status === 'trial') {
     const d = dias(a.trial_ends_at)
-    if (d === null) return null
-    const vencido = d < 0
+    if (d === null || d < 0) return null
+    if (a.has_billing) return <div className="bg-emerald-50 px-4 py-2 text-center text-sm text-emerald-800">Teste grátis: {d === 0 ? 'último dia' : `${d} dia(s)`}. Assinatura já configurada ✓</div>
     return (
-      <div className={`px-4 py-2 text-center text-sm ${vencido ? 'bg-red-50 text-red-700' : d <= 5 ? 'bg-amber-50 text-amber-800' : 'bg-brand-50 text-brand-800'}`}>
-        {vencido ? 'Seu período de teste terminou. Fale com a equipe NEXO para continuar usando.' : `Teste grátis: ${d === 0 ? 'último dia' : `${d} dia(s) restante(s)`}`}
+      <div className={`px-4 py-2 text-center text-sm ${d <= 5 ? 'bg-amber-50 text-amber-800' : 'bg-brand-50 text-brand-800'}`}>
+        Teste grátis: {d === 0 ? 'último dia' : `${d} dia(s) restante(s)`}.{d <= 7 && <Link to="/planos" className="ml-1 font-semibold underline">Assinar agora</Link>}
       </div>
     )
   }
-  if ((a.status === 'active' && a.current_period_end && dias(a.current_period_end)! < 0) || a.status === 'past_due') {
-    return <div className="bg-red-50 px-4 py-2 text-center text-sm text-red-700">Mensalidade em aberto. Fale com a equipe NEXO para regularizar.</div>
+  if (a.access === 'aviso' || a.status === 'past_due') {
+    return <div className="bg-red-50 px-4 py-2 text-center text-sm text-red-700">Mensalidade em aberto. Regularize para não perder o acesso.{pagar}</div>
+  }
+  if (a.status === 'active' && a.invoice_url && a.invoice_due) {
+    const d = dias(`${a.invoice_due}T23:59:59-03:00`)
+    if (d !== null && d <= 5) return <div className="bg-amber-50 px-4 py-2 text-center text-sm text-amber-800">Sua mensalidade vence {d <= 0 ? 'hoje' : `em ${d} dia(s)`}.{pagar}</div>
   }
   return null
+}
+
+function Bloqueio({ dono, a }: { dono: boolean; a: import('../lib/store').Assinatura }) {
+  const teste = a.status === 'trial'
+  return (
+    <div className="mx-auto max-w-md py-10 text-center">
+      <div className="text-4xl">🔒</div>
+      <h1 className="mt-3 text-xl font-semibold">{teste ? 'Seu teste grátis terminou' : 'Acesso pausado por falta de pagamento'}</h1>
+      <p className="mt-2 text-sm text-muted">Seus produtos, vendas e clientes estão guardados. {dono ? 'Assine um plano para voltar a usar na hora.' : 'Peça para o dono da loja regularizar a assinatura.'}</p>
+      {dono && (
+        <div className="mt-5 space-y-2">
+          {a.invoice_url && <a href={a.invoice_url} target="_blank" rel="noreferrer" className="block rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white hover:bg-brand-800">Pagar a mensalidade em aberto</a>}
+          <Link to="/planos" className={`block rounded-xl px-4 py-3 text-sm font-semibold ${a.invoice_url ? 'border border-brand-200 text-brand-800 hover:bg-brand-50' : 'bg-brand-700 text-white hover:bg-brand-800'}`}>Ver planos</Link>
+        </div>
+      )}
+      <p className="mt-4 text-xs text-muted">Depois de pagar, a liberação é automática. Se não liberar em alguns minutos, toque em atualizar.</p>
+      <button onClick={() => location.reload()} className="mt-2 text-sm text-brand-700 hover:underline">Atualizar</button>
+    </div>
+  )
 }
