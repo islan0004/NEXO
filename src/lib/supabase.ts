@@ -35,6 +35,9 @@ const messages: Record<string, string> = {
   idempotency_key_reused: 'Esta operação já foi registrada.',
   customer_required: 'Para vender fiado, escolha o cliente.',
   invalid_customer: 'Cliente inválido ou inativo.',
+  'plan_required:pro': 'Esse recurso faz parte do plano Pro. Veja em Planos.',
+  plan_user_limit: 'O plano da loja já está no limite de usuários.',
+  slug_taken: 'Esse endereço já é de outra loja.',
   amount_exceeds_balance: 'O valor é maior que a dívida do cliente.',
   invalid_amount: 'Informe um valor válido.',
 }

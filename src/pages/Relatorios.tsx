@@ -4,6 +4,8 @@ import { useStore } from '../lib/store'
 import { Dica } from '../components/Tour'
 import { dataBR, periodo, type Atalho } from '../lib/periodo'
 import { Alert, Card, Spinner, cellInput } from '../components/ui'
+import { Link } from 'react-router-dom'
+import { usePlano } from '../lib/planos'
 
 export type Relatorio = {
   revenue: number; cost: number; gross_profit: number; discounts: number
@@ -11,12 +13,15 @@ export type Relatorio = {
   by_day: { day: string; revenue: number; profit: number; sales: number }[]
   by_method: { method: string; total: number }[]
   top_products: { product_name: string; attributes: Attrs; qtd: number; receita: number; lucro: number }[]
+  card_fees: number; expenses: number; expenses_by_category: { category: string; total: number }[]
 }
 
 const ATALHOS: [Atalho, string][] = [['hoje', 'Hoje'], ['7d', '7 dias'], ['mes', 'Este mês'], ['mes_anterior', 'Mês passado'], ['30d', '30 dias']]
 
 export default function Relatorios() {
   const { current, canManage } = useStore()
+  const { pode } = usePlano()
+  const livre = pode('periodos')
   const [atalho, setAtalho] = useState<Atalho | null>('mes')
   const [de, setDe] = useState(periodo('mes').de)
   const [ate, setAte] = useState(periodo('mes').ate)
@@ -30,7 +35,7 @@ export default function Relatorios() {
     setLoading(true); setErro('')
     supabase.rpc('get_sales_report', { _store_id: current.id, _from: de, _to: ate }).then(({ data, error }) => {
       if (!vivo) return
-      if (error) setErro(error.message.includes('invalid_period') ? 'Período inválido (máximo de 2 anos).' : traduzErro(error))
+      if (error) setErro(error.message.includes('invalid_period') ? 'Período inválido (máximo de 2 anos).' : error.message.includes('plan_required') ? 'Períodos anteriores ao mês atual fazem parte do NEXO Pro.' : traduzErro(error))
       setR((data as Relatorio) ?? null)
       setLoading(false)
     })
@@ -56,14 +61,16 @@ export default function Relatorios() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex flex-wrap rounded-xl bg-brand-50 p-1 text-sm">
           {ATALHOS.map(([k, l]) => (
-            <button key={k} onClick={() => escolher(k)} className={`rounded-lg px-3 py-1.5 font-medium ${atalho === k ? 'bg-white text-brand-800 shadow-sm' : 'text-muted'}`}>{l}</button>
+            livre || k === 'hoje' || k === 'mes'
+              ? <button key={k} onClick={() => escolher(k)} className={`rounded-lg px-3 py-1.5 font-medium ${atalho === k ? 'bg-white text-brand-800 shadow-sm' : 'text-muted'}`}>{l}</button>
+              : <Link key={k} to="/planos" title="Disponível no NEXO Pro" className="rounded-lg px-3 py-1.5 font-medium text-muted/60">🔒 {l}</Link>
           ))}
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        {livre && <div className="flex items-center gap-2 text-sm">
           <input type="date" className={`${cellInput} w-auto`} value={de} max={ate} onChange={(e) => { setAtalho(null); setDe(e.target.value) }} />
           <span className="text-muted">até</span>
           <input type="date" className={`${cellInput} w-auto`} value={ate} min={de} onChange={(e) => { setAtalho(null); setAte(e.target.value) }} />
-        </div>
+        </div>}
       </div>
 
       {erro && <Alert>{erro}</Alert>}
@@ -75,6 +82,26 @@ export default function Relatorios() {
             <Stat label="Vendas" valor={String(r.sales_count)} dica={r.canceled_count > 0 ? `${r.canceled_count} cancelada(s)` : undefined} />
             <Stat label="Ticket médio" valor={brl(ticket)} />
           </div>
+
+          {pode('despesas') ? (
+            <Card>
+              <h2 className="mb-3 font-semibold">Lucro líquido: o que sobrou de verdade</h2>
+              <div className="space-y-1.5 text-sm">
+                <div className="flex justify-between"><span>Faturamento</span><span>{brl(r.revenue)}</span></div>
+                <div className="flex justify-between text-muted"><span>− Custo dos produtos</span><span>{brl(r.cost)}</span></div>
+                <div className="flex justify-between text-muted"><span>− Taxas da maquininha</span><span>{brl(r.card_fees)}</span></div>
+                <div className="flex justify-between text-muted"><span>− Despesas {r.expenses_by_category.length > 0 && <span className="text-xs">({r.expenses_by_category.map((c) => c.category).join(', ')})</span>}</span><span>{brl(r.expenses)}</span></div>
+                <div className={`flex justify-between border-t border-brand-100 pt-2 text-base font-semibold ${r.gross_profit - r.card_fees - r.expenses < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                  <span>Lucro líquido</span><span>{brl(r.gross_profit - r.card_fees - r.expenses)}</span>
+                </div>
+              </div>
+              {Number(r.expenses) === 0 && <p className="mt-2 text-xs text-muted">Lance aluguel e contas em <Link to="/despesas" className="text-brand-700 hover:underline">Despesas</Link> para o número ficar real.</p>}
+            </Card>
+          ) : (
+            <Link to="/planos" className="flex items-center gap-2 rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">
+              🔒 <span><strong>Lucro líquido</strong> (descontando despesas e taxas) · disponível no NEXO Pro</span>
+            </Link>
+          )}
 
           {r.by_day.length > 1 && (
             <Card>

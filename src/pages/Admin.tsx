@@ -3,6 +3,8 @@ import { brl, parseNum, supabase, traduzErro } from '../lib/supabase'
 import { useToast } from '../lib/toast'
 import { Alert, Badge, Button, Card, Field, Modal, Select, Spinner } from '../components/ui'
 import { SEGMENTOS } from './Onboarding'
+import { PLANOS, nomePlano } from '../lib/planos'
+import type { Plano } from '../lib/store'
 
 const perfilLoja = (l: Loja) => [SEGMENTOS.find((x) => x.id === l.segment)?.label, l.onboarding?.faturamento].filter(Boolean).join(' · ')
 
@@ -10,12 +12,12 @@ type Overview = {
   users: number; users_7d: number; stores: number; stores_30d: number; active_7d: number
   trial: number; trial_expired: number; paying: number; past_due: number; free: number; canceled: number
   mrr: number; received_month: number; received_total: number; gmv_30d: number; sales_30d: number
-  settings: { default_trial_days: number; default_monthly_price: number | null }
+  settings: { default_trial_days: number; default_monthly_price: number | null; price_start: number; price_pro: number; price_black: number; support_whatsapp: string | null }
 }
 type Status = 'trial' | 'active' | 'past_due' | 'canceled' | 'free'
 type Loja = {
   store_id: string; store_name: string; owner_name: string | null; owner_email: string | null; created_at: string
-  status: Status | null; trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null; notes: string | null
+  status: Status | null; plan: Plano; trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null; notes: string | null
   members: number; products: number; sales_30d: number; gmv_30d: number; last_sale_at: string | null; last_payment_at: string | null; paid_total: number
   segment: string | null; onboarding: { faturamento?: string } | null
 }
@@ -88,8 +90,8 @@ export default function Admin() {
         <Kpi label="Atrasadas" valor={String(ov.past_due)} dica={`${ov.free} cortesia · ${ov.canceled} cancelada(s)`} alerta={ov.past_due > 0} />
         <Kpi label="Vendido pelas lojas (30 dias)" valor={brl(ov.gmv_30d)} dica={`${ov.sales_30d} venda(s) no sistema`} />
       </div>
-      {ov.settings.default_monthly_price === null && Number(ov.mrr) === 0 && (
-        <p className="text-sm text-muted">Nenhum preço definido ainda. A receita começa a contar quando você registrar o primeiro pagamento ou definir o preço em Configurações.</p>
+      {Number(ov.mrr) === 0 && (
+        <p className="text-sm text-muted">A receita começa a contar quando você registrar o primeiro pagamento. Preços e o seu WhatsApp de vendas ficam em Configurações.</p>
       )}
 
       <Card className="overflow-x-auto p-0">
@@ -121,7 +123,7 @@ export default function Admin() {
                     {perfilLoja(l) && <div className="text-xs text-brand-700">{perfilLoja(l)}</div>}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge tone={s.tom}>{s.texto}</Badge>
+                    <Badge tone={s.tom}>{s.texto}</Badge>{l.status === 'active' && <Badge>{nomePlano(l.plan)}</Badge>}
                     {l.status === 'active' && l.current_period_end && <div className="mt-1 text-xs text-muted">pago até {dt(l.current_period_end)}</div>}
                   </td>
                   <td className="px-4 py-3 text-right">{l.monthly_price !== null ? brl(l.monthly_price) : '—'}
@@ -148,7 +150,7 @@ export default function Admin() {
                     <div className="text-xs text-muted">{l.owner_name ?? '—'} · {l.owner_email ?? '—'}</div>
                     {perfilLoja(l) && <div className="text-xs text-brand-700">{perfilLoja(l)}</div>}
                   </div>
-                  <Badge tone={s.tom}>{s.texto}</Badge>
+                  <Badge tone={s.tom}>{s.texto}</Badge>{l.status === 'active' && <Badge>{nomePlano(l.plan)}</Badge>}
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div><div className="text-muted">Mensalidade</div><div className="font-medium">{l.monthly_price !== null ? brl(l.monthly_price) : '—'}</div></div>
@@ -169,7 +171,7 @@ export default function Admin() {
       </Card>
 
       {editar && <EditarAssinatura loja={editar} onClose={() => setEditar(null)} onSaved={() => { setEditar(null); toast('Assinatura atualizada'); carregar() }} />}
-      {pagar && <Pagamentos loja={pagar} precoPadrao={ov.settings.default_monthly_price} onClose={() => setPagar(null)} onSaved={() => { setPagar(null); toast('Pagamento registrado'); carregar() }} />}
+      {pagar && <Pagamentos loja={pagar} precoPadrao={null} onClose={() => setPagar(null)} onSaved={() => { setPagar(null); toast('Pagamento registrado'); carregar() }} />}
       {config && <Configuracoes atual={ov.settings} onClose={() => setConfig(false)} onSaved={() => { setConfig(false); toast('Configurações salvas'); carregar() }} />}
     </div>
   )
@@ -187,6 +189,7 @@ function Kpi({ label, valor, dica, verde, alerta }: { label: string; valor: stri
 
 function EditarAssinatura({ loja, onClose, onSaved }: { loja: Loja; onClose: () => void; onSaved: () => void }) {
   const [status, setStatus] = useState<Status>(loja.status ?? 'trial')
+  const [plano, setPlano] = useState<Plano>(loja.plan ?? 'start')
   const [fimTeste, setFimTeste] = useState(toInputDate(loja.trial_ends_at))
   const [pagoAte, setPagoAte] = useState(toInputDate(loja.current_period_end))
   const [preco, setPreco] = useState(loja.monthly_price !== null ? String(loja.monthly_price).replace('.', ',') : '')
@@ -200,7 +203,7 @@ function EditarAssinatura({ loja, onClose, onSaved }: { loja: Loja; onClose: () 
     if (p !== null && (Number.isNaN(p) || p < 0)) return setErro('Confira o preço.')
     setLoading(true)
     const { error } = await supabase.rpc('admin_update_subscription', {
-      _store_id: loja.store_id, _status: status, _trial_ends_at: fromInputDate(fimTeste), _current_period_end: fromInputDate(pagoAte),
+      _store_id: loja.store_id, _status: status, _plan: plano, _trial_ends_at: fromInputDate(fimTeste), _current_period_end: fromInputDate(pagoAte),
       _monthly_price: p, _notes: obs,
     })
     setLoading(false)
@@ -215,13 +218,16 @@ function EditarAssinatura({ loja, onClose, onSaved }: { loja: Loja; onClose: () 
         <Select label="Situação" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
           {Object.entries(STATUS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
         </Select>
+        <Select label="Plano contratado" value={plano} onChange={(e) => setPlano(e.target.value as Plano)}>
+          {PLANOS.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
+        </Select>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Fim do teste" type="date" value={fimTeste} onChange={(e) => setFimTeste(e.target.value)} />
           <Field label="Pago até" type="date" value={pagoAte} onChange={(e) => setPagoAte(e.target.value)} />
         </div>
-        <Field label="Mensalidade (R$)" inputMode="decimal" value={preco} onChange={(e) => setPreco(e.target.value)} placeholder="Ainda não definido" />
+        <Field label="Mensalidade (R$)" inputMode="decimal" value={preco} onChange={(e) => setPreco(e.target.value)} placeholder="Vazio = preço do plano" />
         <Field label="Observações" value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Ex.: preço de fundador, piloto" />
-        <p className="text-xs text-muted">Só lojas com situação “Pagante” entram na receita mensal (MRR).</p>
+        <p className="text-xs text-muted">Em teste ou cortesia a loja usa tudo. Como “Pagante”, vale o plano contratado e entra na receita mensal (MRR).</p>
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Salvar</Button></div>
       </form>
     </Modal>
@@ -284,18 +290,25 @@ function Pagamentos({ loja, precoPadrao, onClose, onSaved }: { loja: Loja; preco
 }
 
 function Configuracoes({ atual, onClose, onSaved }: { atual: Overview['settings']; onClose: () => void; onSaved: () => void }) {
+  const f = (n: number | null) => (n !== null && n !== undefined ? String(n).replace('.', ',') : '')
   const [diasTeste, setDiasTeste] = useState(String(atual.default_trial_days))
-  const [preco, setPreco] = useState(atual.default_monthly_price !== null ? String(atual.default_monthly_price).replace('.', ',') : '')
+  const [pStart, setPStart] = useState(f(atual.price_start))
+  const [pPro, setPPro] = useState(f(atual.price_pro))
+  const [pBlack, setPBlack] = useState(f(atual.price_black))
+  const [zap, setZap] = useState(atual.support_whatsapp ?? '')
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault(); setErro('')
-    const d = parseInt(diasTeste, 10), p = preco.trim() ? parseNum(preco) : null
+    const d = parseInt(diasTeste, 10)
+    const precos = [pStart, pPro, pBlack].map(parseNum)
     if (!(d >= 0 && d <= 365)) return setErro('Dias de teste entre 0 e 365.')
-    if (p !== null && (Number.isNaN(p) || p < 0)) return setErro('Confira o preço.')
+    if (precos.some((p) => Number.isNaN(p) || p <= 0)) return setErro('Confira os preços dos planos.')
     setLoading(true)
-    const { error } = await supabase.rpc('admin_update_settings', { _default_trial_days: d, _default_monthly_price: p })
+    const { error } = await supabase.rpc('admin_update_settings', {
+      _default_trial_days: d, _price_start: precos[0], _price_pro: precos[1], _price_black: precos[2], _support_whatsapp: zap,
+    })
     setLoading(false)
     if (error) return setErro(traduzErro(error))
     onSaved()
@@ -306,8 +319,13 @@ function Configuracoes({ atual, onClose, onSaved }: { atual: Overview['settings'
       <form onSubmit={onSubmit} className="space-y-4">
         {erro && <Alert>{erro}</Alert>}
         <Field label="Dias de teste para lojas novas" inputMode="numeric" value={diasTeste} onChange={(e) => setDiasTeste(e.target.value)} />
-        <Field label="Mensalidade padrão (R$)" inputMode="decimal" value={preco} onChange={(e) => setPreco(e.target.value)} placeholder="Ainda não definido" />
-        <p className="text-xs text-muted">Vale para lojas criadas daqui para frente. Lojas existentes você ajusta em “Editar”.</p>
+        <div className="grid grid-cols-3 gap-3">
+          <Field label="Start (R$)" inputMode="decimal" value={pStart} onChange={(e) => setPStart(e.target.value)} />
+          <Field label="Pro (R$)" inputMode="decimal" value={pPro} onChange={(e) => setPPro(e.target.value)} />
+          <Field label="Black (R$)" inputMode="decimal" value={pBlack} onChange={(e) => setPBlack(e.target.value)} />
+        </div>
+        <Field label="Seu WhatsApp de vendas" inputMode="tel" value={zap} onChange={(e) => setZap(e.target.value)} placeholder="(82) 99999-0000" />
+        <p className="text-xs text-muted">Os preços aparecem na tela Planos de cada loja. O botão “Quero este plano” abre conversa com esse WhatsApp.</p>
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Salvar</Button></div>
       </form>
     </Modal>

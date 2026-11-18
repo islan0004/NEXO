@@ -12,7 +12,11 @@ const nav = [
   { to: '/produtos', label: 'Produtos e estoque', tour: 'produtos' },
   { to: '/vendas', label: 'Vendas', tour: 'vendas' },
   { to: '/fiado', label: 'Fiado', tour: 'fiado' },
+  { to: '/despesas', label: 'Despesas', gestor: true, tour: 'despesas' },
   { to: '/relatorios', label: 'Relatórios', gestor: true, tour: 'relatorios' },
+  { to: '/catalogo', label: 'Catálogo online', gestor: true, tour: 'catalogo' },
+  { to: '/equipe', label: 'Equipe', gestor: true, tour: 'equipe' },
+  { to: '/planos', label: 'Planos', dono: true, tour: 'planos' },
   { to: '/duvidas', label: 'Dúvidas', tour: 'duvidas' },
 ]
 
@@ -27,7 +31,7 @@ export default function AppLayout() {
 
   const links = (
     <nav className="space-y-1">
-      {nav.filter((n) => !('gestor' in n) || canManage).map((n) => (
+      {nav.filter((n) => (!('gestor' in n) || canManage) && (!('dono' in n) || current?.role === 'owner')).map((n) => (
         <NavLink key={n.to} to={n.to} end={n.end} onClick={() => setOpen(false)} data-tour={`nav-${n.tour}`}
           className={({ isActive }) => `block rounded-xl px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-brand-100 text-brand-800' : 'text-muted hover:bg-brand-50 hover:text-ink'}`}>
           {n.label}

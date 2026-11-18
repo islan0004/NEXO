@@ -14,8 +14,14 @@ type StoreCtx = {
   canManage: boolean
   isAdmin: boolean
   assinatura: Assinatura | null
+  recarregarAssinatura: () => void
 }
-export type Assinatura = { status: 'trial' | 'active' | 'past_due' | 'canceled' | 'free'; trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null }
+export type Plano = 'start' | 'pro' | 'black'
+export type Assinatura = {
+  status: 'trial' | 'active' | 'past_due' | 'canceled' | 'free'; plan: Plano; effective_plan: Plano
+  trial_ends_at: string | null; current_period_end: string | null; monthly_price: number | null
+  prices: Record<Plano, number>; support_whatsapp: string | null
+}
 const Ctx = createContext<StoreCtx>(null as unknown as StoreCtx)
 const KEY = 'nexo.store'
 
@@ -57,17 +63,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const current = stores.find((s) => s.id === currentId) ?? stores[0] ?? null
   const currentStoreId = current?.id
-  useEffect(() => {
+  const recarregarAssinatura = useCallback(() => {
     if (!currentStoreId) return
     supabase.rpc('get_my_subscription', { _store_id: currentStoreId }).then(({ data }) => setAssinatura((data as Assinatura) ?? null))
   }, [currentStoreId])
+  useEffect(() => { recarregarAssinatura() }, [recarregarAssinatura])
   const select = (id: string) => {
     setCurrentId(id)
     try { localStorage.setItem(KEY, id) } catch { /* sem storage */ }
   }
 
   return (
-    <Ctx.Provider value={{ stores, current, loading, select, reload, canManage: current?.role === 'owner' || current?.role === 'manager', isAdmin, assinatura }}>
+    <Ctx.Provider value={{ stores, current, loading, select, reload, canManage: current?.role === 'owner' || current?.role === 'manager', isAdmin, assinatura, recarregarAssinatura }}>
       {children}
     </Ctx.Provider>
   )

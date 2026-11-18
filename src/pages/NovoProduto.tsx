@@ -3,6 +3,7 @@ import { parseNum, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import type { Categoria } from '../lib/categories'
 import CategoriaSelect from '../components/CategoriaSelect'
 import { useStore } from '../lib/store'
+import Bloqueado from '../components/Bloqueado'
 
 // Sugestões conforme o segmento escolhido no quiz inicial
 const POR_SEGMENTO: Record<string, { exemplo: string; variacoes: boolean; atributos: { nome: string; valores: string }[] }> = {
@@ -111,10 +112,12 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
           <p className="mt-1 text-xs text-muted">Com o custo, o NEXO mostra o seu lucro em cada venda.</p>
         </div>
 
-        <label className="flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-medium">
-          <input type="checkbox" checked={comVariacoes} onChange={(e) => setComVariacoes(e.target.checked)} />
-          Tem tamanhos ou cores diferentes
-        </label>
+        <Bloqueado recurso="variacoes" titulo="Tamanhos e cores" texto="" compacto>
+          <label className="flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-medium">
+            <input type="checkbox" checked={comVariacoes} onChange={(e) => setComVariacoes(e.target.checked)} />
+            Tem tamanhos ou cores diferentes
+          </label>
+        </Bloqueado>
 
         <button type="button" onClick={() => setMais((m) => !m)} className="text-sm font-medium text-brand-700 hover:underline">
           {mais ? '− Menos opções' : '+ Mais opções (categoria, aviso de estoque, código)'}

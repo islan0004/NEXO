@@ -7,6 +7,7 @@ import { abrirWhatsApp, textoResumoDia } from '../lib/mensagens'
 import { Card, Spinner } from '../components/ui'
 import type { Relatorio } from './Relatorios'
 import { usePerfil } from '../lib/perfil'
+import { usePlano } from '../lib/planos'
 
 type Receber = { total: number; overdue: number; customers_open: number; customers_overdue: number }
 type Item = { variant_id: string; product_id: string; product_name: string; attributes: Attrs; stock_quantity: number; min_stock: number; active: boolean }
@@ -14,6 +15,7 @@ type Item = { variant_id: string; product_id: string; product_name: string; attr
 export default function Dashboard() {
   const { current, canManage } = useStore()
   const { perfil } = usePerfil()
+  const { pode } = usePlano()
   const primeiro = perfil?.full_name?.trim().split(' ')[0]
   const [mes, setMes] = useState<Relatorio | null>(null)
   const [dia, setDia] = useState<Relatorio | null>(null)
@@ -74,7 +76,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <Stat label="Vendido hoje" value={brl(dia?.revenue)} hint={`${dia?.sales_count ?? 0} venda(s)`} />
             <Stat label="Faturamento do mês" value={brl(mes?.revenue)} hint={`${mes?.sales_count ?? 0} venda(s)`} />
-            <Stat label="Lucro bruto do mês" value={brl(mes?.gross_profit)} hint={`Margem ${pct(margem)}`} green />
+            {pode('despesas') && mes
+              ? <Stat label="Lucro líquido do mês" value={brl(mes.gross_profit - Number(mes.card_fees) - Number(mes.expenses))} hint={`Bruto ${brl(mes.gross_profit)} · margem ${pct(margem)}`} green />
+              : <Stat label="Lucro bruto do mês" value={brl(mes?.gross_profit)} hint={`Margem ${pct(margem)}`} green />}
             <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
           </div>
           <div className="flex flex-wrap items-center gap-3">

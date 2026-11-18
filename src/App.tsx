@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useAuth } from './lib/auth'
 import { StoreProvider, useStore } from './lib/store'
@@ -19,11 +20,22 @@ import ProdutoDetalhe from './pages/ProdutoDetalhe'
 import Vendas from './pages/Vendas'
 import NovaVenda from './pages/NovaVenda'
 import VendaDetalhe from './pages/VendaDetalhe'
+import Despesas from './pages/Despesas'
+import Equipe from './pages/Equipe'
+import Planos from './pages/Planos'
+import Catalogo from './pages/Catalogo'
+import LojaPublica from './pages/LojaPublica'
+import Convite, { CHAVE_CONVITE } from './pages/Convite'
+
+const conviteGuardado = () => { try { return localStorage.getItem(CHAVE_CONVITE) } catch { return null } }
 
 function Protegido() {
-  const { stores, current, loading } = useStore()
+  const { stores, current, loading, reload } = useStore()
   const { perfil, loading: carregandoPerfil } = usePerfil()
+  const [convite, setConvite] = useState(conviteGuardado)
   if (loading || carregandoPerfil) return <Spinner />
+  // Convite pendente (veio de um link /convite antes de criar conta): resolve antes de tudo
+  if (convite) return <Convite codigo={convite} aoConcluir={() => { setConvite(null); reload() }} />
   // Quiz + tema na primeira entrada (novos e antigos). Quem não é dono pula o quiz.
   if (perfil && !perfil.onboarding_completed_at) {
     if (stores.length === 0 || current?.role === 'owner') return <Onboarding />
@@ -42,6 +54,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/loja/:slug" element={<LojaPublica />} />
+      <Route path="/convite/:code" element={session ? <StoreProvider><ConviteLogado /></StoreProvider> : <Convite />} />
       {!session ? (
         <>
           <Route path="/entrar" element={<Entrar />} />
@@ -62,9 +76,18 @@ export default function App() {
           <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/duvidas" element={<Duvidas />} />
+          <Route path="/despesas" element={<Despesas />} />
+          <Route path="/equipe" element={<Equipe />} />
+          <Route path="/planos" element={<Planos />} />
+          <Route path="/catalogo" element={<Catalogo />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       )}
     </Routes>
   )
+}
+
+function ConviteLogado() {
+  const { reload } = useStore()
+  return <Convite aoConcluir={() => { reload(); window.location.assign('/') }} />
 }

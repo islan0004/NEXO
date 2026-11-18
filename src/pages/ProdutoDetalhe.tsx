@@ -5,9 +5,11 @@ import { useStore } from '../lib/store'
 import { useCategorias } from '../lib/categories'
 import CategoriaSelect from '../components/CategoriaSelect'
 import { useToast } from '../lib/toast'
+import { usePlano } from '../lib/planos'
+import { enviarFotoProduto } from '../lib/foto'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
 
-type Produto = { id: string; name: string; category_id: string | null; active: boolean }
+type Produto = { id: string; name: string; category_id: string | null; active: boolean; image_url: string | null }
 type Variante = {
   id: string; is_default: boolean; sku: string | null; attributes: Attrs; unit_cost: string
   sale_price: string; stock_quantity: string; min_stock: string; active: boolean
@@ -27,6 +29,7 @@ export default function ProdutoDetalhe() {
   const { current, canManage } = useStore()
   const { categorias, criar } = useCategorias(current?.id)
   const toast = useToast()
+  const { pode } = usePlano()
   const [produto, setProduto] = useState<Produto | null>(null)
   const [variantes, setVariantes] = useState<Variante[]>([])
   const [movs, setMovs] = useState<Mov[]>([])
@@ -39,7 +42,7 @@ export default function ProdutoDetalhe() {
   const carregar = useCallback(async () => {
     if (!id || !current) return
     const [p, v] = await Promise.all([
-      supabase.from('products').select('id, name, category_id, active').eq('id', id).eq('store_id', current.id).maybeSingle(),
+      supabase.from('products').select('id, name, category_id, active, image_url').eq('id', id).eq('store_id', current.id).maybeSingle(),
       supabase.from('product_variants').select('id, is_default, sku, attributes, unit_cost, sale_price, stock_quantity, min_stock, active')
         .eq('product_id', id).order('is_default', { ascending: false }).order('created_at'),
     ])
@@ -74,7 +77,10 @@ export default function ProdutoDetalhe() {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{produto.name}</h1>
+          <div className="flex items-center gap-3">
+            <FotoProduto storeId={current!.id} produto={produto} pode={pode('fotos')} onChange={(url) => setProduto({ ...produto, image_url: url })} />
+            <h1 className="text-2xl font-semibold tracking-tight">{produto.name}</h1>
+          </div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted">
             <span>{categoria ?? 'Sem categoria'}</span>
             {!produto.active && <Badge tone="gray">Inativo</Badge>}
@@ -92,7 +98,7 @@ export default function ProdutoDetalhe() {
       <Card className="overflow-x-auto p-0">
         <div className="flex items-center justify-between px-4 py-3">
           <h2 className="font-semibold">{temVariacoes ? 'Variações' : 'Estoque e preço'}</h2>
-          {temVariacoes && <Button variant="ghost" onClick={() => setNovaVar(true)}>+ Variação</Button>}
+          {temVariacoes && pode('variacoes') && <Button variant="ghost" onClick={() => setNovaVar(true)}>+ Variação</Button>}
         </div>
         <table className="w-full text-sm">
           <thead className="bg-brand-50/60 text-left text-xs uppercase tracking-wide text-muted">
@@ -346,5 +352,26 @@ function NovaVariante({ productId, chaves, base, onClose, onSaved }: {
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Adicionar</Button></div>
       </form>
     </Modal>
+  )
+}
+
+function FotoProduto({ storeId, produto, pode, onChange }: { storeId: string; produto: Produto; pode: boolean; onChange: (url: string) => void }) {
+  const toast = useToast()
+  const [enviando, setEnviando] = useState(false)
+  const caixa = 'relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-brand-200 bg-brand-50 text-xs text-brand-700'
+  if (!pode) return produto.image_url ? <img src={produto.image_url} alt="" className="h-16 w-16 rounded-xl object-cover" />
+    : <Link to="/planos" title="Fotos no catálogo: NEXO Pro" className={caixa}>🔒 foto</Link>
+  return (
+    <label className={`${caixa} cursor-pointer hover:border-brand-400`} title="Adicionar foto">
+      {produto.image_url ? <img src={produto.image_url} alt="" className="h-full w-full object-cover" /> : <span className="px-1 text-center leading-tight">{enviando ? '…' : '+ Adicionar foto'}</span>}
+      {enviando && <span className="absolute inset-0 flex items-center justify-center bg-white/70">…</span>}
+      <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+        const f = e.target.files?.[0]; if (!f) return
+        setEnviando(true)
+        try { onChange(await enviarFotoProduto(storeId, produto.id, f)); toast('Foto salva') }
+        catch (err) { toast(traduzErro(err), 'erro') }
+        setEnviando(false)
+      }} />
+    </label>
   )
 }
