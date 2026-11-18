@@ -78,6 +78,7 @@ export function Cadastro() {
         <Field label="E-mail" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Field label="Senha" type="password" required autoComplete="new-password" minLength={8} value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Mínimo 8 caracteres" />
         <Button type="submit" loading={loading} className="w-full">Criar conta</Button>
+        <p className="text-center text-xs text-muted">Ao criar a conta, você concorda com os <Link to="/termos" target="_blank" className="underline">Termos de uso</Link> e a <Link to="/privacidade" target="_blank" className="underline">Política de privacidade</Link>.</p>
         <p className="text-center text-sm text-muted">Já tem conta? <Link to="/entrar" className="text-brand-700 hover:underline">Entrar</Link></p>
       </form>
     </AuthShell>

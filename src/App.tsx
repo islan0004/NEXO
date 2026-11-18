@@ -22,6 +22,7 @@ import NovaVenda from './pages/NovaVenda'
 import VendaDetalhe from './pages/VendaDetalhe'
 import Despesas from './pages/Despesas'
 import Clientes from './pages/Clientes'
+import { Privacidade, Termos } from './pages/Legal'
 import Caixa from './pages/Caixa'
 import Planilhas from './pages/Planilhas'
 import Equipe from './pages/Equipe'
@@ -58,6 +59,8 @@ export default function App() {
     <Routes>
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/loja/:slug" element={<LojaPublica />} />
+      <Route path="/termos" element={<Termos />} />
+      <Route path="/privacidade" element={<Privacidade />} />
       <Route path="/convite/:code" element={session ? <StoreProvider><ConviteLogado /></StoreProvider> : <Convite />} />
       {!session ? (
         <>

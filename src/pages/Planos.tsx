@@ -126,7 +126,7 @@ function Assinar({ plano, preco, onClose, onPronto }: { plano: Plano; preco?: nu
         <p className="text-sm text-muted">{preco ? `${brl(preco)} por mês. ` : ''}{emTeste ? 'Você continua no teste grátis; a primeira cobrança só vence quando ele acabar.' : 'A cobrança é gerada agora.'}</p>
         <Field label="Nome do responsável ou da empresa" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus />
         <Field label="CPF ou CNPJ" inputMode="numeric" value={doc} onChange={(e) => setDoc(e.target.value)} placeholder="Só números" />
-        <p className="text-xs text-muted">Usado só para emitir a cobrança (exigência do banco). O pagamento é processado pelo Asaas.</p>
+        <p className="text-xs text-muted">Usado só para emitir a cobrança (exigência do banco). O pagamento é processado pelo Asaas. Ao assinar, você concorda com os <a href="/termos" target="_blank" className="underline">Termos de uso</a> e a <a href="/privacidade" target="_blank" className="underline">Política de privacidade</a>.</p>
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Gerar cobrança</Button></div>
       </form>
     </Modal>
