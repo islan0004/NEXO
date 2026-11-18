@@ -350,3 +350,7 @@ begin
   ) into r;
   return r;
 end $function$;
+
+-- (aplicado como fase3_extrato_vale_fidelidade) extrato mostra o vale de devolução;
+-- fidelidade conta o valor líquido de devoluções (venda devolvida inteira não conta).
+-- Ver definição atual de get_customer_statement e get_loyalty no banco.

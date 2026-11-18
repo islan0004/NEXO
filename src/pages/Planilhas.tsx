@@ -64,7 +64,7 @@ function Exportar() {
     const linhas = ((data ?? []) as unknown as R[]).sort((a, b) => a.products.name.localeCompare(b.products.name))
     baixar(`produtos-${loja}.csv`, csv([
       ['Nome', 'Variação', 'Categoria', 'Código', 'Preço', 'Custo', 'Estoque', 'Estoque mínimo', 'Ativo'],
-      ...linhas.map((r) => [r.products.name, labelVariant(r.attributes ?? {}), r.products.categories?.name ?? '', r.sku ?? '', num(r.sale_price), num(r.unit_cost),
+      ...linhas.map((r) => [r.products.name, Object.keys(r.attributes ?? {}).length ? labelVariant(r.attributes) : '', r.products.categories?.name ?? '', r.sku ?? '', num(r.sale_price), num(r.unit_cost),
         String(r.stock_quantity).replace('.', ','), String(r.min_stock).replace('.', ','), r.active && r.products.active ? 'sim' : 'não']),
     ]))
   })

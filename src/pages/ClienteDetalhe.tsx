@@ -83,7 +83,7 @@ export default function ClienteDetalhe() {
                 <div>
                   {l.kind === 'charge'
                     ? <Link to={`/vendas/${l.ref_id}`} className="font-medium hover:underline">Compra · venda #{l.sale_number}</Link>
-                    : <span className="font-medium">Pagamento · {METODOS[l.method] ?? l.method}</span>}
+                    : <span className="font-medium">{l.method === 'Vale de devolução' ? `Vale de devolução · venda #${l.sale_number}` : `Pagamento · ${METODOS[l.method] ?? l.method}`}</span>}
                   {l.canceled && <Badge tone="gray">Cancelada</Badge>}
                   <div className="text-xs text-muted">{new Date(l.happened_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}{l.note ? ` · ${l.note}` : ''}</div>
                 </div>

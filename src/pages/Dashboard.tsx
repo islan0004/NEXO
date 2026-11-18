@@ -81,7 +81,7 @@ export default function Dashboard() {
             <Stat label="Vendido hoje" value={brl(dia?.revenue)} hint={`${dia?.sales_count ?? 0} venda(s)`} />
             <Stat label="Faturamento do mês" value={brl(mes?.revenue)} hint={`${mes?.sales_count ?? 0} venda(s)`} />
             {pode('despesas') && mes
-              ? <Stat label="Lucro líquido do mês" value={brl(mes.gross_profit - Number(mes.card_fees) - Number(mes.expenses))} hint={`Bruto ${brl(mes.gross_profit)} · margem ${pct(margem)}`} green />
+              ? <Stat label="Lucro líquido do mês" value={brl(mes.gross_profit - Number(mes.card_fees) - Number(mes.expenses))} hint={`Bruto ${brl(mes.gross_profit)} · margem ${pct(margem)}`} green={mes.gross_profit - Number(mes.card_fees) - Number(mes.expenses) >= 0} red={mes.gross_profit - Number(mes.card_fees) - Number(mes.expenses) < 0} />
               : <Stat label="Lucro bruto do mês" value={brl(mes?.gross_profit)} hint={`Margem ${pct(margem)}`} green />}
             <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
           </div>
@@ -136,11 +136,11 @@ export default function Dashboard() {
   )
 }
 
-function Stat({ label, value, hint, green }: { label: string; value: string; hint?: string; green?: boolean }) {
+function Stat({ label, value, hint, green, red }: { label: string; value: string; hint?: string; green?: boolean; red?: boolean }) {
   return (
     <Card>
       <div className="text-sm text-muted">{label}</div>
-      <div className={`mt-1 text-xl font-semibold tracking-tight ${green ? 'text-emerald-700' : 'text-brand-900'}`}>{value}</div>
+      <div className={`mt-1 text-xl font-semibold tracking-tight ${red ? 'text-red-600' : green ? 'text-emerald-700' : 'text-brand-900'}`}>{value}</div>
       {hint && <div className="mt-0.5 text-xs text-muted">{hint}</div>}
     </Card>
   )
