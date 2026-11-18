@@ -8,7 +8,7 @@ export const PLANOS: { id: Plano; nome: string; frase: string; usuarios: string;
     itens: ['Vendas, valor avulso e estoque', 'Fiado com cobrança no WhatsApp', 'Comprovante e Fechar o dia', 'Caixa do dia (abrir e fechar)', 'Relatório do mês atual', 'Backup em planilha'],
   },
   {
-    id: 'pro', nome: 'Komando Pro', frase: 'Para a loja com rotina e equipe pequena', usuarios: 'Até 3 usuários',
+    id: 'pro', nome: 'Komando Pro', frase: 'Para a loja que já tem equipe e rotina', usuarios: 'Até 3 usuários',
     itens: ['Tudo do Start', 'Tamanhos e cores (variações)', 'Despesas, taxa da maquininha e lucro líquido', 'Catálogo online com pedido no WhatsApp', 'Relatórios de qualquer período', 'Meta do mês e produtos parados', 'Leitor de código de barras pela câmera', 'Trocas e devoluções', 'Importar produtos por planilha', '4 temas de cores'],
   },
   {

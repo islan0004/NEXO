@@ -26,7 +26,7 @@ function Pagina({ titulo, children }: { titulo: string; children: ReactNode }) {
 export function Termos() {
   return (
     <Pagina titulo="Termos de uso do Komando">
-      <p>Estes termos valem para quem cria uma conta no Komando, sistema on-line de gestão de vendas, estoque, fiado e finanças para pequenos negócios. Ao criar a conta, você concorda com eles.</p>
+      <p>Estes termos valem para quem cria uma conta no Komando, sistema on-line de gestão de vendas, estoque, fiado e finanças para lojas e comércios. Ao criar a conta, você concorda com eles.</p>
 
       <h2>1. O serviço</h2>
       <p>O Komando permite registrar produtos, vendas, clientes, contas a receber (fiado), despesas e relatórios. Os recursos disponíveis dependem do plano contratado (Start, Pro ou Black), conforme descrito na tela Planos dentro do sistema.</p>

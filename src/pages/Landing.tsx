@@ -7,15 +7,15 @@ import { Logo } from '../components/ui'
 
 type Precos = { start: number; pro: number; black: number; trial_days: number; whatsapp: string | null }
 
-const RECURSOS: { icone: string; titulo: string; texto: string }[] = [
+const RECURSOS: { icone: string; titulo: string; texto: string; plano?: string }[] = [
   { icone: '⚡', titulo: 'Venda em segundos', texto: 'Escolha o produto ou digite só o valor. Pix, dinheiro, cartão ou fiado, com troco calculado.' },
-  { icone: '📦', titulo: 'Estoque que bate', texto: 'Cada venda baixa o estoque sozinha. Aviso quando está acabando, com tamanhos e cores.' },
+  { icone: '📦', titulo: 'Estoque que bate', texto: 'Cada venda baixa o estoque sozinha. Você recebe aviso quando um produto está acabando.' },
   { icone: '📒', titulo: 'Fiado sem caderno', texto: 'Quem deve, quanto e desde quando. Cobrança pronta no WhatsApp com um toque.' },
   { icone: '💵', titulo: 'Caixa do dia', texto: 'Abra com o troco, feche contando a gaveta. O Komando mostra se faltou ou sobrou.' },
-  { icone: '📈', titulo: 'Lucro de verdade', texto: 'Desconta custo, taxa da maquininha e despesas. Você vê quanto sobrou no mês.' },
-  { icone: '🛍️', titulo: 'Catálogo online', texto: 'Um link com seus produtos para a bio do Instagram. O pedido chega no seu WhatsApp.' },
-  { icone: '👥', titulo: 'Equipe', texto: 'Convide vendedoras. Elas registram vendas sem ver seu custo e seu lucro.' },
-  { icone: '⭐', titulo: 'Clientes que voltam', texto: 'Aniversariantes, clientes sumidos e cartão fidelidade, com mensagem pronta.' },
+  { icone: '📈', titulo: 'Lucro de verdade', texto: 'Desconta custo, taxa da maquininha e despesas. Você vê quanto sobrou no mês.', plano: 'Pro' },
+  { icone: '🛍️', titulo: 'Catálogo online', texto: 'Um link com seus produtos para a bio do Instagram. O pedido chega no seu WhatsApp.', plano: 'Pro' },
+  { icone: '👥', titulo: 'Equipe', texto: 'Convide vendedoras. Elas registram vendas sem ver seu custo e seu lucro.', plano: 'Pro' },
+  { icone: '⭐', titulo: 'Clientes que voltam', texto: 'Aniversariantes, clientes sumidos e cartão fidelidade, com mensagem pronta.', plano: 'Black' },
 ]
 
 const DORES = [
@@ -29,6 +29,7 @@ const PERGUNTAS: [string, string][] = [
   ['Funciona sem internet?', 'Não. O Komando precisa de internet (Wi-Fi ou dados do celular) para salvar suas vendas com segurança.'],
   ['Emite nota fiscal?', 'Não. O Komando cuida da gestão: vendas, estoque, fiado, caixa e lucro. A nota fiscal continua com o sistema que você já usa ou com o seu contador.'],
   ['Como funciona o teste grátis?', 'Você cria a conta e usa tudo liberado durante o teste, sem cadastrar cartão. No fim, escolhe um plano para continuar. Se não assinar, nada é cobrado.'],
+  ['Posso mudar de plano depois?', 'Sim. Na tela Planos, dentro do app, você escolhe outro plano quando quiser. A próxima cobrança já vem no valor do plano novo.'],
   ['Como pago a mensalidade?', 'Por Pix, boleto ou cartão, direto pelo app. O plano é liberado automaticamente assim que o pagamento cai.'],
   ['Meus dados ficam seguros?', 'Cada loja só enxerga os próprios dados, e cada pessoa da equipe vê apenas o que o cargo permite. Você pode baixar tudo em planilha quando quiser.'],
 ]
@@ -91,7 +92,7 @@ export default function Landing() {
               <a href="#recursos" className="rounded-xl border border-brand-200 bg-white px-6 py-3.5 text-center text-base font-medium text-brand-800 hover:bg-brand-50">Ver o que ele faz</a>
             </div>
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
-              <li>✓ Sem cartão de crédito</li><li>✓ Pronto em 2 minutos</li><li>✓ Celular e computador</li>
+              <li>✓ Não pede cartão para testar</li><li>✓ Conta pronta em 1 minuto</li><li>✓ Celular e computador</li>
             </ul>
           </div>
           <Celular />
@@ -115,12 +116,16 @@ export default function Landing() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {RECURSOS.map((r) => (
             <div key={r.titulo} className="group rounded-2xl border border-brand-100 bg-white p-6 transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-700/5">
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-xl">{r.icone}</div>
+              <div className="flex items-start justify-between">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-xl">{r.icone}</div>
+                {r.plano && <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-800">Plano {r.plano}</span>}
+              </div>
               <div className="mt-4 font-semibold">{r.titulo}</div>
               <p className="mt-1.5 text-sm text-muted">{r.texto}</p>
             </div>
           ))}
         </div>
+        <p className="mt-6 text-center text-sm text-muted">Sem etiqueta: disponível em todos os planos. No teste grátis, tudo fica liberado.</p>
       </Secao>
 
       {/* como começar */}
