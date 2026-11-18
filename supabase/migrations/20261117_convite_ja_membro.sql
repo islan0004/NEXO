@@ -1,0 +1,2 @@
+-- Dono/membro que abre o próprio convite não "gasta" o link; get_invite informa member.
+-- (aplicado via MCP: convite_ja_membro)

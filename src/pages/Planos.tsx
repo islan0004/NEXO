@@ -56,7 +56,7 @@ export default function Planos() {
           )
         })}
       </div>
-      <p className="text-center text-xs text-muted">Pagamento por Pix. No plano anual você paga 10 meses e leva 12.</p>
+      <p className="text-center text-xs text-muted">Pagamento mensal por Pix.</p>
     </div>
   )
 }

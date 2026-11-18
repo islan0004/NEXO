@@ -5,7 +5,7 @@ import { useAuth } from '../lib/auth'
 import { Alert, AuthShell, Button, Spinner } from '../components/ui'
 
 export const CHAVE_CONVITE = 'nexo.convite'
-type Info = { store_name: string; role: 'seller' | 'manager'; valid: boolean } | null
+type Info = { store_name: string; role: 'seller' | 'manager'; valid: boolean; member?: boolean } | null
 
 /** Página do link de convite. Sem login: guarda o código e manda criar conta. Com login: entra na equipe. */
 export default function Convite({ codigo: codigoProp, aoConcluir }: { codigo?: string; aoConcluir?: () => void }) {
@@ -50,6 +50,14 @@ export default function Convite({ codigo: codigoProp, aoConcluir }: { codigo?: s
           <Button className="w-full" onClick={() => nav('/cadastro')}>Criar minha conta</Button>
           <Link to="/entrar" className="block text-center text-sm text-brand-700 hover:underline">Já tenho conta, entrar</Link>
         </div>
+      </AuthShell>
+    )
+  }
+
+  if (info?.member) {
+    return (
+      <AuthShell title={`Você já faz parte da ${info.store_name}`} subtitle="Este convite é para outra pessoa. Mande o link para quem vai usar.">
+        <Button className="w-full" onClick={() => { esquecer(); if (aoConcluir) aoConcluir(); else nav('/') }}>Voltar para o NEXO</Button>
       </AuthShell>
     )
   }

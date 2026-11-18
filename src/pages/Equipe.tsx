@@ -55,7 +55,7 @@ export default function Equipe() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Equipe</h1>
-        <p className="text-sm text-muted">{ativos} de {limite === Infinity ? 'ilimitados' : limite} usuário(s) no {nomePlano(plano)}</p>
+        <p className="text-sm text-muted">{limite === Infinity ? `${ativos} usuário(s) · ilimitado no ${nomePlano(plano)}` : `${ativos} de ${limite} usuário(s) no ${nomePlano(plano)}`}</p>
       </div>
 
       {dono && (
