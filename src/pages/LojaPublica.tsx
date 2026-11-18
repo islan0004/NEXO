@@ -99,7 +99,7 @@ export default function LojaPublica() {
             })}
           </div>
         )}
-        <p className="pt-4 text-center text-xs text-muted">Catálogo feito com NEXO</p>
+        <p className="pt-4 text-center text-xs text-muted">Catálogo feito com Komando</p>
       </div>
 
       {itens > 0 && (

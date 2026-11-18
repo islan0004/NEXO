@@ -114,7 +114,7 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
         </div>
         <div>
           <Field label="Quanto você pagou (custo)" inputMode="decimal" value={custo} onChange={(e) => setCusto(e.target.value)} placeholder="Opcional" />
-          <p className="mt-1 text-xs text-muted">Com o custo, o NEXO mostra o seu lucro em cada venda.</p>
+          <p className="mt-1 text-xs text-muted">Com o custo, o Komando mostra o seu lucro em cada venda.</p>
         </div>
 
         <Bloqueado recurso="variacoes" titulo="Tamanhos e cores" texto="" compacto>

@@ -36,7 +36,7 @@ export default function Relatorios() {
     setLoading(true); setErro('')
     supabase.rpc('get_sales_report', { _store_id: current.id, _from: de, _to: ate }).then(({ data, error }) => {
       if (!vivo) return
-      if (error) setErro(error.message.includes('invalid_period') ? 'Período inválido (máximo de 2 anos).' : error.message.includes('plan_required') ? 'Períodos anteriores ao mês atual fazem parte do NEXO Pro.' : traduzErro(error))
+      if (error) setErro(error.message.includes('invalid_period') ? 'Período inválido (máximo de 2 anos).' : error.message.includes('plan_required') ? 'Períodos anteriores ao mês atual fazem parte do Komando Pro.' : traduzErro(error))
       setR((data as Relatorio) ?? null)
       setLoading(false)
     })
@@ -64,7 +64,7 @@ export default function Relatorios() {
           {ATALHOS.map(([k, l]) => (
             livre || k === 'hoje' || k === 'mes'
               ? <button key={k} onClick={() => escolher(k)} className={`rounded-lg px-3 py-1.5 font-medium ${atalho === k ? 'bg-white text-brand-800 shadow-sm' : 'text-muted'}`}>{l}</button>
-              : <Link key={k} to="/planos" title="Disponível no NEXO Pro" className="rounded-lg px-3 py-1.5 font-medium text-muted/60">🔒 {l}</Link>
+              : <Link key={k} to="/planos" title="Disponível no Komando Pro" className="rounded-lg px-3 py-1.5 font-medium text-muted/60">🔒 {l}</Link>
           ))}
         </div>
         {livre && <div className="flex items-center gap-2 text-sm">
@@ -100,7 +100,7 @@ export default function Relatorios() {
             </Card>
           ) : (
             <Link to="/planos" className="flex items-center gap-2 rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">
-              🔒 <span><strong>Lucro líquido</strong> (descontando despesas e taxas) · disponível no NEXO Pro</span>
+              🔒 <span><strong>Lucro líquido</strong> (descontando despesas e taxas) · disponível no Komando Pro</span>
             </Link>
           )}
 
@@ -158,7 +158,7 @@ export default function Relatorios() {
         </>
       )}
       {pode('parados') ? <ProdutosParados /> : (
-        <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Produtos parados</strong> · disponível no NEXO Pro</Link>
+        <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Produtos parados</strong> · disponível no Komando Pro</Link>
       )}
     </div>
   )

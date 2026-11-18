@@ -52,7 +52,7 @@ export function textoResumoDia(p: {
     `📒 Fiado a receber: ${brl(p.aReceber)}${p.atrasados > 0 ? ` (${p.atrasados} cliente(s) em atraso)` : ''}`,
     p.estoqueBaixo.length ? `\n⚠️ Estoque baixo:\n${p.estoqueBaixo.slice(0, 10).map((x) => `• ${x}`).join('\n')}${p.estoqueBaixo.length > 10 ? `\n• e mais ${p.estoqueBaixo.length - 10}` : ''}` : null,
     '',
-    '— enviado pelo NEXO',
+    '— enviado pelo Komando',
   ]
   return l.filter((x) => x !== null).join('\n')
 }

@@ -73,7 +73,7 @@ export default function Onboarding() {
 
         <div key={passo} className="nexo-step rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
           {passo === 0 && (
-            <Passo titulo="Bem-vindo ao NEXO! 👋" sub="Vamos deixar tudo do jeito da sua loja. Leva menos de 1 minuto.">
+            <Passo titulo="Bem-vindo ao Komando! 👋" sub="Vamos deixar tudo do jeito da sua loja. Leva menos de 1 minuto.">
               <div className="space-y-4">
                 <Field label="Seu nome" autoFocus value={nome} onChange={(e) => setNome(e.target.value)} />
                 <Field label="Nome da loja" value={loja} onChange={(e) => setLoja(e.target.value)} placeholder="Ex.: Brilho Semijoias" />
@@ -109,7 +109,7 @@ export default function Onboarding() {
             </Passo>
           )}
           {passo === 5 && (
-            <Passo titulo="Escolha a cara do seu NEXO" sub="Dá para trocar depois, quando quiser.">
+            <Passo titulo="Escolha a cara do seu Komando" sub="Dá para trocar depois, quando quiser.">
               <TemaPicker value={tema} onChange={(t) => { setTemaLocal(t); aplicarTema(t) }} />
             </Passo>
           )}
@@ -120,7 +120,7 @@ export default function Onboarding() {
             {passo > 0 ? <Button variant="ghost" onClick={() => setPasso((p) => p - 1)}>Voltar</Button> : <span />}
             {passo < 5
               ? <Button onClick={() => setPasso((p) => p + 1)} disabled={!podeAvancar}>Continuar</Button>
-              : <Button onClick={concluir} loading={salvando}>Entrar no NEXO →</Button>}
+              : <Button onClick={concluir} loading={salvando}>Entrar no Komando →</Button>}
           </div>
         </div>
         {passo === 0 && (

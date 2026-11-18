@@ -196,7 +196,7 @@ function Fechar({ sessao, esperado, onClose, onFechado }: { sessao: string; espe
     <Modal title="Fechar caixa" onClose={onClose}>
       <form onSubmit={salvar} className="space-y-4">
         {erro && <Alert>{erro}</Alert>}
-        <p className="text-sm text-muted">Conte as notas e moedas da gaveta sem olhar o valor esperado. O NEXO compara depois.</p>
+        <p className="text-sm text-muted">Conte as notas e moedas da gaveta sem olhar o valor esperado. O Komando compara depois.</p>
         <Field label="Quanto tem na gaveta (R$)" inputMode="decimal" value={contado} onChange={(e) => setContado(e.target.value)} autoFocus />
         <Field label="Observação (opcional)" value={obs} onChange={(e) => setObs(e.target.value)} />
         <p className="text-xs text-muted">O esperado agora é {brl(esperado)}.</p>

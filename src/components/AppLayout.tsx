@@ -58,7 +58,7 @@ export default function AppLayout() {
       {isAdmin && (
         <NavLink to="/admin" onClick={() => setOpen(false)}
           className={({ isActive }) => `block rounded-xl border border-brand-200 px-3 py-2 text-sm font-semibold transition ${isActive ? 'bg-brand-700 text-white' : 'text-brand-800 hover:bg-brand-50'}`}>
-          ⚙ Admin NEXO
+          ⚙ Admin Komando
         </NavLink>
       )}
       {app.disponivel && (
@@ -103,9 +103,9 @@ export default function AppLayout() {
       )}
       <Tour />
       {dicaIos && (
-        <Modal title="Instalar o NEXO no iPhone" onClose={() => setDicaIos(false)}>
+        <Modal title="Instalar o Komando no iPhone" onClose={() => setDicaIos(false)}>
           <ol className="list-decimal space-y-2 pl-5 text-sm">
-            <li>Abra o NEXO no <strong>Safari</strong>.</li>
+            <li>Abra o Komando no <strong>Safari</strong>.</li>
             <li>Toque no botão <strong>Compartilhar</strong> (quadrado com seta para cima).</li>
             <li>Escolha <strong>Adicionar à Tela de Início</strong> e confirme.</li>
           </ol>

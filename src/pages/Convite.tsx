@@ -45,7 +45,7 @@ export default function Convite({ codigo: codigoProp, aoConcluir }: { codigo?: s
 
   if (!session) {
     return (
-      <AuthShell title="Você foi convidado(a) para o NEXO" subtitle="Crie sua conta ou entre para fazer parte da equipe da loja.">
+      <AuthShell title="Você foi convidado(a) para o Komando" subtitle="Crie sua conta ou entre para fazer parte da equipe da loja.">
         <div className="space-y-3">
           <Button className="w-full" onClick={() => nav('/cadastro')}>Criar minha conta</Button>
           <Link to="/entrar" className="block text-center text-sm text-brand-700 hover:underline">Já tenho conta, entrar</Link>
@@ -57,7 +57,7 @@ export default function Convite({ codigo: codigoProp, aoConcluir }: { codigo?: s
   if (info?.member) {
     return (
       <AuthShell title={`Você já faz parte da ${info.store_name}`} subtitle="Este convite é para outra pessoa. Mande o link para quem vai usar.">
-        <Button className="w-full" onClick={() => { esquecer(); if (aoConcluir) aoConcluir(); else nav('/') }}>Voltar para o NEXO</Button>
+        <Button className="w-full" onClick={() => { esquecer(); if (aoConcluir) aoConcluir(); else nav('/') }}>Voltar para o Komando</Button>
       </AuthShell>
     )
   }

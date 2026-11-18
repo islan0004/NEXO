@@ -143,7 +143,7 @@ function ConfigFidelidade() {
   return (
     <Card>
       <h2 className="font-semibold">⭐ Cartão fidelidade</h2>
-      <p className="mt-1 text-xs text-muted">Cada venda com o cliente escolhido conta um selo. Quando completar, o NEXO avisa na venda e no cadastro do cliente.</p>
+      <p className="mt-1 text-xs text-muted">Cada venda com o cliente escolhido conta um selo. Quando completar, o Komando avisa na venda e no cadastro do cliente.</p>
       <form onSubmit={salvar} className="mt-3 space-y-3">
         {erro && <Alert>{erro}</Alert>}
         <label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={ligado} onChange={(e) => setLigado(e.target.checked)} /> Usar cartão fidelidade</label>

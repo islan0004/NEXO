@@ -136,7 +136,7 @@ function ConteudoDespesas() {
 
         <Card className="h-fit space-y-3">
           <h2 className="font-semibold">Taxa da maquininha</h2>
-          <p className="text-xs text-muted">Quanto a maquininha cobra em cada venda. O NEXO desconta do lucro sozinho.</p>
+          <p className="text-xs text-muted">Quanto a maquininha cobra em cada venda. O Komando desconta do lucro sozinho.</p>
           {TAXAS.map((t) => (
             <label key={t.k} className="flex items-center justify-between gap-3 text-sm">
               {t.l}

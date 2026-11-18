@@ -25,17 +25,17 @@ function Pagina({ titulo, children }: { titulo: string; children: ReactNode }) {
 
 export function Termos() {
   return (
-    <Pagina titulo="Termos de uso do NEXO">
-      <p>Estes termos valem para quem cria uma conta no NEXO, sistema on-line de gestão de vendas, estoque, fiado e finanças para pequenos negócios. Ao criar a conta, você concorda com eles.</p>
+    <Pagina titulo="Termos de uso do Komando">
+      <p>Estes termos valem para quem cria uma conta no Komando, sistema on-line de gestão de vendas, estoque, fiado e finanças para pequenos negócios. Ao criar a conta, você concorda com eles.</p>
 
       <h2>1. O serviço</h2>
-      <p>O NEXO permite registrar produtos, vendas, clientes, contas a receber (fiado), despesas e relatórios. Os recursos disponíveis dependem do plano contratado (Start, Pro ou Black), conforme descrito na tela Planos dentro do sistema.</p>
+      <p>O Komando permite registrar produtos, vendas, clientes, contas a receber (fiado), despesas e relatórios. Os recursos disponíveis dependem do plano contratado (Start, Pro ou Black), conforme descrito na tela Planos dentro do sistema.</p>
 
       <h2>2. Conta e acesso</h2>
       <ul>
         <li>Você é responsável pelas informações cadastradas e por manter sua senha em segurança.</li>
         <li>O dono da loja pode convidar outras pessoas (vendedores e gerentes) e é responsável pelo que elas fazem na conta da loja.</li>
-        <li>É proibido usar o NEXO para atividades ilegais ou para tentar acessar dados de outras lojas.</li>
+        <li>É proibido usar o Komando para atividades ilegais ou para tentar acessar dados de outras lojas.</li>
       </ul>
 
       <h2>3. Teste grátis, planos e pagamento</h2>
@@ -44,7 +44,7 @@ export function Termos() {
         <li>Depois do teste, para continuar usando, é preciso assinar um plano. A cobrança é mensal e processada pelo Asaas, por Pix, boleto ou cartão.</li>
         <li>O plano é liberado automaticamente após a confirmação do pagamento.</li>
         <li>Se a mensalidade não for paga, o acesso é pausado alguns dias após o vencimento. Seus dados continuam guardados e o acesso volta assim que o pagamento é confirmado.</li>
-        <li>Você pode trocar de plano pela tela Planos. Para cancelar a assinatura, fale com a equipe NEXO pelo WhatsApp informado no sistema.</li>
+        <li>Você pode trocar de plano pela tela Planos. Para cancelar a assinatura, fale com a equipe Komando pelo WhatsApp informado no sistema.</li>
         <li>Os preços podem mudar. Qualquer mudança é avisada com antecedência e vale a partir da cobrança seguinte.</li>
       </ul>
 
@@ -53,24 +53,24 @@ export function Termos() {
 
       <h2>5. Disponibilidade e responsabilidade</h2>
       <ul>
-        <li>Trabalhamos para manter o NEXO no ar e funcionando, mas podem ocorrer instabilidades e manutenções.</li>
-        <li>O NEXO é uma ferramenta de apoio à gestão. Os números mostrados dependem das informações registradas por você. Decisões financeiras, fiscais e contábeis são de responsabilidade do negócio. O NEXO não emite nota fiscal e não substitui um contador.</li>
+        <li>Trabalhamos para manter o Komando no ar e funcionando, mas podem ocorrer instabilidades e manutenções.</li>
+        <li>O Komando é uma ferramenta de apoio à gestão. Os números mostrados dependem das informações registradas por você. Decisões financeiras, fiscais e contábeis são de responsabilidade do negócio. O Komando não emite nota fiscal e não substitui um contador.</li>
         <li>Recomendamos baixar um backup em planilha periodicamente.</li>
       </ul>
 
       <h2>6. Encerramento</h2>
-      <p>Você pode parar de usar o NEXO quando quiser. Podemos suspender contas que violem estes termos. Se o serviço for encerrado, avisaremos com antecedência para que você possa baixar seus dados.</p>
+      <p>Você pode parar de usar o Komando quando quiser. Podemos suspender contas que violem estes termos. Se o serviço for encerrado, avisaremos com antecedência para que você possa baixar seus dados.</p>
 
       <h2>7. Contato</h2>
-      <p>Dúvidas sobre estes termos: fale com a equipe NEXO pelo WhatsApp disponível na tela Planos do sistema.</p>
+      <p>Dúvidas sobre estes termos: fale com a equipe Komando pelo WhatsApp disponível na tela Planos do sistema.</p>
     </Pagina>
   )
 }
 
 export function Privacidade() {
   return (
-    <Pagina titulo="Política de privacidade do NEXO">
-      <p>Esta política explica quais dados o NEXO coleta, para que usa e como você pode exercer seus direitos, conforme a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).</p>
+    <Pagina titulo="Política de privacidade do Komando">
+      <p>Esta política explica quais dados o Komando coleta, para que usa e como você pode exercer seus direitos, conforme a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).</p>
 
       <h2>1. Dados que coletamos</h2>
       <ul>
@@ -89,10 +89,10 @@ export function Privacidade() {
       <p>Não vendemos seus dados e não usamos os dados dos seus clientes para outra finalidade.</p>
 
       <h2>3. Dados dos seus clientes</h2>
-      <p>Quando você cadastra seus clientes no NEXO, a sua loja é a responsável por esses dados (controladora), e o NEXO apenas os guarda e processa para você (operador). Cadastre somente o necessário e informe seus clientes quando for o caso.</p>
+      <p>Quando você cadastra seus clientes no Komando, a sua loja é a responsável por esses dados (controladora), e o Komando apenas os guarda e processa para você (operador). Cadastre somente o necessário e informe seus clientes quando for o caso.</p>
 
       <h2>4. Com quem compartilhamos</h2>
-      <p>Usamos serviços de terceiros para operar o NEXO:</p>
+      <p>Usamos serviços de terceiros para operar o Komando:</p>
       <ul>
         <li><strong>Supabase:</strong> banco de dados e login.</li>
         <li><strong>Vercel:</strong> hospedagem do site.</li>
@@ -104,7 +104,7 @@ export function Privacidade() {
       <p>O acesso é protegido por senha, e cada loja só enxerga os próprios dados. Dentro da loja, cada pessoa vê apenas o que o seu cargo permite.</p>
 
       <h2>6. Seus direitos</h2>
-      <p>Você pode pedir para acessar, corrigir, baixar ou excluir seus dados. Boa parte pode ser feita no próprio sistema, como editar cadastros e baixar planilhas. Para os demais pedidos, fale com a equipe NEXO pelo WhatsApp informado na tela Planos.</p>
+      <p>Você pode pedir para acessar, corrigir, baixar ou excluir seus dados. Boa parte pode ser feita no próprio sistema, como editar cadastros e baixar planilhas. Para os demais pedidos, fale com a equipe Komando pelo WhatsApp informado na tela Planos.</p>
 
       <h2>7. Por quanto tempo guardamos</h2>
       <p>Enquanto sua conta estiver ativa. Se você pedir a exclusão, apagamos os dados, exceto o que a lei obriga a manter, como registros de pagamento.</p>

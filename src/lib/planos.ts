@@ -4,15 +4,15 @@ export const ORDEM: Record<Plano, number> = { start: 1, pro: 2, black: 3 }
 
 export const PLANOS: { id: Plano; nome: string; frase: string; usuarios: string; itens: string[] }[] = [
   {
-    id: 'start', nome: 'NEXO Start', frase: 'Para quem vende sozinho e quer sair do caderno', usuarios: '1 usuário',
+    id: 'start', nome: 'Komando Start', frase: 'Para quem vende sozinho e quer sair do caderno', usuarios: '1 usuário',
     itens: ['Vendas, valor avulso e estoque', 'Fiado com cobrança no WhatsApp', 'Comprovante e Fechar o dia', 'Caixa do dia (abrir e fechar)', 'Relatório do mês atual', 'Backup em planilha'],
   },
   {
-    id: 'pro', nome: 'NEXO Pro', frase: 'Para a loja com rotina e equipe pequena', usuarios: 'Até 3 usuários',
+    id: 'pro', nome: 'Komando Pro', frase: 'Para a loja com rotina e equipe pequena', usuarios: 'Até 3 usuários',
     itens: ['Tudo do Start', 'Tamanhos e cores (variações)', 'Despesas, taxa da maquininha e lucro líquido', 'Catálogo online com pedido no WhatsApp', 'Relatórios de qualquer período', 'Meta do mês e produtos parados', 'Leitor de código de barras pela câmera', 'Trocas e devoluções', 'Importar produtos por planilha', '4 temas de cores'],
   },
   {
-    id: 'black', nome: 'NEXO Black', frase: 'Para a loja que quer crescer e fidelizar', usuarios: 'Usuários ilimitados',
+    id: 'black', nome: 'Komando Black', frase: 'Para a loja que quer crescer e fidelizar', usuarios: 'Usuários ilimitados',
     itens: ['Tudo do Pro', 'Clientes sumidos e aniversariantes', 'Cartão fidelidade digital', 'Equipe sem limite de usuários', 'Tema exclusivo Noir Dourado', 'Atendimento prioritário no WhatsApp', 'Novidades em primeira mão'],
   },
 ]

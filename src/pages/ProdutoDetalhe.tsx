@@ -360,7 +360,7 @@ function FotoProduto({ storeId, produto, pode, onChange }: { storeId: string; pr
   const [enviando, setEnviando] = useState(false)
   const caixa = 'relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-brand-200 bg-brand-50 text-xs text-brand-700'
   if (!pode) return produto.image_url ? <img src={produto.image_url} alt="" className="h-16 w-16 rounded-xl object-cover" />
-    : <Link to="/planos" title="Fotos no catálogo: NEXO Pro" className={caixa}>🔒 foto</Link>
+    : <Link to="/planos" title="Fotos no catálogo: Komando Pro" className={caixa}>🔒 foto</Link>
   return (
     <label className={`${caixa} cursor-pointer hover:border-brand-400`} title="Adicionar foto">
       {produto.image_url ? <img src={produto.image_url} alt="" className="h-full w-full object-cover" /> : <span className="px-1 text-center leading-tight">{enviando ? '…' : '+ Adicionar foto'}</span>}

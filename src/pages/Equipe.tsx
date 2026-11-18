@@ -103,7 +103,7 @@ export default function Equipe() {
             <div className="break-all rounded-xl bg-brand-50 p-3 font-mono text-xs">{convite.link}</div>
             <div className="flex flex-wrap gap-2">
               <a className="rounded-xl bg-brand-700 px-4 py-2.5 font-medium text-white hover:bg-brand-800" target="_blank" rel="noreferrer"
-                href={abrirWhatsApp(`Oi! Te convidei para a equipe da ${current?.name} no NEXO. Crie sua conta por este link: ${convite.link}`)}>Enviar no WhatsApp</a>
+                href={abrirWhatsApp(`Oi! Te convidei para a equipe da ${current?.name} no Komando. Crie sua conta por este link: ${convite.link}`)}>Enviar no WhatsApp</a>
               <Button variant="ghost" onClick={() => { navigator.clipboard?.writeText(convite.link); toast('Link copiado') }}>Copiar link</Button>
             </div>
           </div>

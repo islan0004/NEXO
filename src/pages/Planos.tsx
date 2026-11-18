@@ -60,7 +60,7 @@ export default function Planos() {
               ) : dono ? (
                 <button onClick={() => setAssinar(p.id)}
                   className={`mt-5 block w-full rounded-xl px-4 py-2.5 text-center text-sm font-semibold ${p.id === 'black' ? 'bg-[#d4af37] text-[#15120d]' : 'bg-brand-700 text-white hover:bg-brand-800'}`}>
-                  {contratado && ORDEM[p.id] < ORDEM[contratado] ? 'Mudar para este' : `Assinar o ${p.nome.replace('NEXO ', '')}`}
+                  {contratado && ORDEM[p.id] < ORDEM[contratado] ? 'Mudar para este' : `Assinar o ${p.nome.replace('Komando ', '')}`}
                 </button>
               ) : assinatura?.support_whatsapp ? (
                 <a href={abrirWhatsApp(msg, assinatura.support_whatsapp)} target="_blank" rel="noreferrer"
@@ -68,13 +68,13 @@ export default function Planos() {
                   {contratado && ORDEM[p.id] < ORDEM[contratado] ? 'Mudar para este' : 'Quero este plano'}
                 </a>
               ) : (
-                <p className="mt-5 text-center text-xs opacity-70">Fale com a equipe NEXO para assinar.</p>
+                <p className="mt-5 text-center text-xs opacity-70">Fale com a equipe Komando para assinar.</p>
               )}
             </Card>
           )
         })}
       </div>
-      <p className="text-center text-xs text-muted">Pagamento mensal por Pix, boleto ou cartão. Liberação automática assim que o pagamento cai.{assinatura?.support_whatsapp && <> Dúvidas? <a className="underline" href={abrirWhatsApp('Olá! Tenho uma dúvida sobre os planos do NEXO.', assinatura.support_whatsapp)} target="_blank" rel="noreferrer">Fale com a gente</a>.</>}</p>
+      <p className="text-center text-xs text-muted">Pagamento mensal por Pix, boleto ou cartão. Liberação automática assim que o pagamento cai.{assinatura?.support_whatsapp && <> Dúvidas? <a className="underline" href={abrirWhatsApp('Olá! Tenho uma dúvida sobre os planos do Komando.', assinatura.support_whatsapp)} target="_blank" rel="noreferrer">Fale com a gente</a>.</>}</p>
       {assinar && <Assinar plano={assinar} preco={assinatura?.prices?.[assinar]} onClose={() => setAssinar(null)} onPronto={() => { setAssinar(null); recarregarAssinatura() }} />}
     </div>
   )

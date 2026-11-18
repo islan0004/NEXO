@@ -86,7 +86,7 @@ export default function Dashboard() {
             <Stat label="Ticket médio do mês" value={brl(mes && mes.sales_count ? mes.revenue / mes.sales_count : 0)} />
           </div>
           {pode('meta') ? <MetaDoMes faturado={Number(mes?.revenue ?? 0)} meta={meta} onSalvo={setMeta} /> : (
-            <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Meta do mês</strong> · disponível no NEXO Pro</Link>
+            <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Meta do mês</strong> · disponível no Komando Pro</Link>
           )}
           <div className="flex flex-wrap items-center gap-3">
             <a href={abrirWhatsApp(resumo())} target="_blank" rel="noreferrer" data-tour="fechar-dia"

@@ -34,7 +34,7 @@ export default function Planilhas() {
       </div>
       <Exportar />
       {pode('importar') ? <Importar /> : (
-        <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Importar produtos por planilha</strong> · disponível no NEXO Pro</Link>
+        <Link to="/planos" className="block rounded-xl border border-dashed border-brand-300 px-3 py-2 text-sm text-brand-800 hover:bg-brand-50">🔒 <strong>Importar produtos por planilha</strong> · disponível no Komando Pro</Link>
       )}
     </div>
   )

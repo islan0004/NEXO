@@ -11,11 +11,11 @@ export default function SoTema() {
   const [tema, setLocal] = useState<Tema>(perfil?.theme ?? 'nexo')
   const [salvando, setSalvando] = useState(false)
   return (
-    <AuthShell title="Escolha a cara do seu NEXO" subtitle="Dá para trocar depois em Dúvidas.">
+    <AuthShell title="Escolha a cara do seu Komando" subtitle="Dá para trocar depois em Dúvidas.">
       <TemaPicker value={tema} onChange={(t) => { setLocal(t); aplicarTema(t) }} />
       <Button className="mt-5 w-full" loading={salvando} onClick={async () => {
         setSalvando(true); await setTema(tema); await supabase.rpc('skip_onboarding'); await reload(); setSalvando(false)
-      }}>Entrar no NEXO →</Button>
+      }}>Entrar no Komando →</Button>
     </AuthShell>
   )
 }
