@@ -2,3 +2,5 @@
 -- tabela billing_events, função store_access (ok | aviso | bloqueado), get_my_subscription com access/invoice.
 -- platform_payments.created_by passou a aceitar null (pagamentos registrados pelo webhook).
 -- Edge Function: supabase/functions/asaas (verify_jwt = false; autentica sozinha).
+-- "chave_cobranca_no_banco": tabela platform_secrets (sem acesso para o app) + admin_set_billing_key /
+-- admin_billing_key_info. A função asaas lê a chave do segredo ASAAS_API_KEY ou, se não houver, dessa tabela.

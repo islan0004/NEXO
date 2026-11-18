@@ -336,6 +336,11 @@ function Configuracoes({ atual, onClose, onSaved }: { atual: Overview['settings'
 function ConectarAsaas() {
   const [res, setRes] = useState<{ ok: boolean; msg: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [info, setInfo] = useState<{ saved: boolean; env?: string; end?: string } | null>(null)
+  const [chave, setChave] = useState('')
+  const [salvando, setSalvando] = useState(false)
+  useEffect(() => { supabase.rpc('admin_billing_key_info').then(({ data }) => setInfo(data as typeof info)) }, [])
+
   async function testar() {
     setLoading(true); setRes(null)
     const { data, error } = await supabase.functions.invoke('asaas?acao=configurar', { body: {} })
@@ -344,13 +349,26 @@ function ConectarAsaas() {
     if (data?.ok) return setRes({ ok: true, msg: `Conectado ao Asaas (${data.ambiente}). Aviso de pagamento configurado.` })
     setRes({ ok: false, msg: data?.error ?? 'Falhou.' })
   }
+  async function salvar() {
+    setSalvando(true); setRes(null)
+    const { data, error } = await supabase.rpc('admin_set_billing_key', { _key: chave })
+    setSalvando(false)
+    if (error) return setRes({ ok: false, msg: error.message.includes('invalid_key') ? 'Essa não parece uma chave do Asaas (começa com $aact_).' : traduzErro(error) })
+    setChave('')
+    setInfo({ saved: true, env: String(data).split(' · ')[0], end: String(data).slice(-4) })
+    await testar()
+  }
   return (
-    <div className="rounded-xl border border-brand-100 p-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="text-sm font-medium">Cobrança automática (Asaas)</div>
-        <Button type="button" variant="ghost" loading={loading} onClick={testar}>Testar conexão</Button>
+    <div className="space-y-2 rounded-xl border border-brand-100 p-3">
+      <div className="text-sm font-medium">Cobrança automática (Asaas)</div>
+      <p className="text-xs text-muted">{info?.saved ? `Chave salva (${info.env}, termina em ${info.end}).` : 'Nenhuma chave salva ainda.'} A chave fica guardada no servidor e não aparece mais depois de salva.</p>
+      <div className="flex gap-2">
+        <input type="password" autoComplete="off" value={chave} onChange={(e) => setChave(e.target.value)} placeholder="Cole a chave $aact_..."
+          className="min-w-0 flex-1 rounded-xl border border-brand-200 bg-white px-3 py-2 text-sm" />
+        <Button type="button" loading={salvando} disabled={!chave.trim()} onClick={salvar}>Salvar</Button>
       </div>
-      {res && <p className={`mt-2 text-xs ${res.ok ? 'text-emerald-700' : 'text-red-600'}`}>{res.ok ? '✓ ' : ''}{res.msg}</p>}
+      {info?.saved && <Button type="button" variant="ghost" loading={loading} onClick={testar}>Testar conexão</Button>}
+      {res && <p className={`text-xs ${res.ok ? 'text-emerald-700' : 'text-red-600'}`}>{res.ok ? '✓ ' : ''}{res.msg}</p>}
     </div>
   )
 }

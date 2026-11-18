@@ -6,8 +6,18 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
-const ASAAS_KEY = Deno.env.get('ASAAS_API_KEY') ?? ''
-const ASAAS_URL = Deno.env.get('ASAAS_BASE_URL') ?? 'https://api-sandbox.asaas.com/v3'
+// chave: segredo da função ou, se não houver, a salva pelo Admin (tabela platform_secrets, só o servidor lê)
+let ASAAS_KEY = (Deno.env.get('ASAAS_API_KEY') ?? '').trim()
+let ASAAS_URL = Deno.env.get('ASAAS_BASE_URL') ?? 'https://api-sandbox.asaas.com/v3'
+async function carregarChave() {
+  if (!Deno.env.get('ASAAS_API_KEY')) {
+    const { data } = await admin.from('platform_secrets').select('value').eq('name', 'ASAAS_API_KEY').maybeSingle()
+    ASAAS_KEY = (data?.value ?? '').trim()
+  }
+  if (!Deno.env.get('ASAAS_BASE_URL')) {
+    ASAAS_URL = ASAAS_KEY.startsWith('$aact_prod_') ? 'https://api.asaas.com/v3' : 'https://api-sandbox.asaas.com/v3'
+  }
+}
 // token do webhook: derivado da service key (não precisa de outro segredo; ninguém de fora consegue calcular)
 const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN') ?? [...new Uint8Array(await crypto.subtle.digest('SHA-256',
   new TextEncoder().encode(`nexo-asaas-webhook:${SERVICE_KEY}`)))].map((b) => b.toString(16).padStart(2, '0')).join('')
@@ -115,7 +125,7 @@ async function assinar(req: Request) {
     ...(ss?.status === 'active' && fimAtual && new Date(fimAtual) > new Date() ? { plan, monthly_price: valor } : {}),
   }).eq('store_id', store_id)
 
-  return json({ invoice_url: primeira?.invoiceUrl ?? null, due: primeira?.dueDate ?? vencimento, value: valor })
+  return json({ invoice_url: primeira?.invoiceUrl ?? null, due: primeira?.dueDate ?? vencimento, value: valor, payment_id: primeira?.id ?? null })
 }
 
 // ---------------- webhook ----------------
@@ -166,7 +176,7 @@ async function configurar(req: Request) {
   const user = createClient(SUPABASE_URL, ANON_KEY, { global: { headers: { Authorization: auth } }, auth: { persistSession: false } })
   const { data: ehAdmin } = await user.rpc('is_platform_admin')
   if (!ehAdmin) return json({ error: 'forbidden' }, 403)
-  if (!ASAAS_KEY) return json({ ok: false, chave: false, error: 'Falta salvar a ASAAS_API_KEY no Supabase.' })
+  if (!ASAAS_KEY) return json({ ok: false, chave: false, error: 'Falta salvar a chave do Asaas aqui em Configurações.' })
   const conta = await asaas('/myAccount/commercialInfo').catch((e) => ({ erro: (e as Error).message }))
   if ((conta as any)?.erro) return json({ ok: false, chave: true, error: `A chave não funcionou: ${(conta as any).erro}` })
   const url = `${SUPABASE_URL}/functions/v1/asaas?acao=webhook`
@@ -181,14 +191,27 @@ async function configurar(req: Request) {
   return json({ ok: true, ambiente: ASAAS_URL.includes('sandbox') ? 'teste' : 'produção', webhook: w?.id ?? existente?.id })
 }
 
+// ---------------- simular pagamento (só sandbox, só admin) ----------------
+async function simular(req: Request) {
+  const auth = req.headers.get('Authorization') ?? ''
+  const user = createClient(SUPABASE_URL, ANON_KEY, { global: { headers: { Authorization: auth } }, auth: { persistSession: false } })
+  const { data: ehAdmin } = await user.rpc('is_platform_admin')
+  if (!ehAdmin || !ASAAS_URL.includes('sandbox')) return json({ error: 'forbidden' }, 403)
+  const { payment_id } = await req.json()
+  const r = await asaas(`/sandbox/payment/${payment_id}/confirm`, 'POST', {})
+  return json({ ok: true, status: r?.status })
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   if (req.method !== 'POST') return json({ error: 'method' }, 405)
   const acao = new URL(req.url).searchParams.get('acao')
   try {
+    await carregarChave()
     if (acao === 'webhook') return await webhook(req)
     if (acao === 'assinar') return await assinar(req)
     if (acao === 'configurar') return await configurar(req)
+    if (acao === 'simular') return await simular(req)
     return json({ error: 'acao' }, 400)
   } catch (e) {
     console.error(e)
