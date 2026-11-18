@@ -221,6 +221,19 @@ function EditarAssinatura({ loja, onClose, onSaved }: { loja: Loja; onClose: () 
         <Select label="Plano contratado" value={plano} onChange={(e) => setPlano(e.target.value as Plano)}>
           {PLANOS.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
         </Select>
+        <div className="rounded-xl bg-brand-50/60 px-3 py-2.5">
+          <div className="text-sm font-medium">Estender o teste grátis</div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {[7, 15, 30, 60].map((n) => (
+              <button key={n} type="button" onClick={() => {
+                const base = fimTeste && new Date(`${fimTeste}T12:00:00`) > new Date() ? new Date(`${fimTeste}T12:00:00`) : new Date()
+                base.setDate(base.getDate() + n)
+                setFimTeste(base.toLocaleDateString('en-CA')); setStatus('trial')
+              }} className="rounded-lg border border-brand-200 bg-white px-3 py-1.5 text-sm hover:bg-brand-50">+{n} dias</button>
+            ))}
+          </div>
+          <p className="mt-1.5 text-xs text-muted">Soma a partir do fim atual (ou de hoje, se já venceu) e deixa a loja “Em teste”. Depois toque em Salvar.</p>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Fim do teste" type="date" value={fimTeste} onChange={(e) => setFimTeste(e.target.value)} />
           <Field label="Pago até" type="date" value={pagoAte} onChange={(e) => setPagoAte(e.target.value)} />
