@@ -57,7 +57,7 @@ export default function VendaDetalhe() {
       {nova && !cancelada && (
         <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
           <svg viewBox="0 0 24 24" className="nexo-check h-9 w-9 shrink-0 rounded-full bg-emerald-500 p-1.5" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-          <div className="text-sm"><div className="font-semibold text-emerald-800">Venda #{d.sale.number} registrada!</div><div className="text-emerald-700">O estoque já foi atualizado.</div></div>
+          <div className="text-sm"><div className="font-semibold text-emerald-800">Venda #{d.sale.number} registrada!</div><div className="text-emerald-700">Tudo salvo no seu caixa.</div></div>
         </div>
       )}
 
@@ -94,7 +94,7 @@ export default function VendaDetalhe() {
             <li key={i.id} className="flex justify-between gap-3 px-4 py-3 text-sm">
               <div>
                 <div className="font-medium">{i.product_name}{Object.keys(i.attributes ?? {}).length ? <span className="font-normal text-muted"> · {labelVariant(i.attributes)}</span> : null}</div>
-                <div className="text-xs text-muted">{qtd(i.quantity)} × {brl(i.unit_price)}{canManage && i.line_cost !== null ? ` · custo ${brl(i.line_cost)}` : ''}</div>
+                <div className="text-xs text-muted">{qtd(i.quantity)} × {brl(i.unit_price)}{canManage && i.line_cost !== null ? (Number(i.line_cost) > 0 ? ` · custo ${brl(i.line_cost)}` : ' · sem custo informado') : ''}</div>
               </div>
               <div className="font-medium">{brl(i.line_total)}</div>
             </li>

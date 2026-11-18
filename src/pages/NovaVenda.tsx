@@ -43,6 +43,7 @@ export default function NovaVenda() {
   const [cadastrando, setCadastrando] = useState(false)
   const [chave, setChave] = useState(() => crypto.randomUUID())
   const ultimoValor = useRef<HTMLInputElement | null>(null)
+  const criadosNaHora = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     if (!current) return
@@ -103,7 +104,7 @@ export default function NovaVenda() {
     setCatalogo(lista)
     const novo = lista.find((i) => i.product_id === pid)
     setCadastrando(false)
-    if (novo) { adicionar(novo); toast('Produto cadastrado. Informe o preço da venda.'); setTimeout(() => ultimoValor.current?.focus(), 50) }
+    if (novo) { criadosNaHora.current.add(novo.variant_id); adicionar(novo); toast('Produto cadastrado. Informe o preço da venda.'); setTimeout(() => ultimoValor.current?.focus(), 50) }
   }
 
   const setLinha = (i: number, campo: 'quantidade' | 'preco' | 'descricao' | 'custo', v: string) =>
@@ -145,6 +146,12 @@ export default function NovaVenda() {
       // Erro de validação: a próxima tentativa é uma nova operação
       if (!error.message.includes('idempotency')) setChave(crypto.randomUUID())
       return setErro(traduzErro(error))
+    }
+    // Produto cadastrado na hora: guarda o preço usado como preço de venda
+    for (const l of carrinho) {
+      if (l.tipo === 'produto' && criadosNaHora.current.has(l.item.variant_id)) {
+        await supabase.from('product_variants').update({ sale_price: r2(parseNum(l.preco)) }).eq('id', l.item.variant_id)
+      }
     }
     nav(`/vendas/${data}`, { replace: true, state: { nova: true } })
   }
@@ -210,7 +217,7 @@ export default function NovaVenda() {
                 {carrinho.map((l, i) => {
                   const q = parseNum(l.quantidade) || 0
                   const ultimo = i === carrinho.length - 1
-                  const negativo = l.tipo === 'produto' && q > Number(l.item.stock_quantity)
+                  const negativo = l.tipo === 'produto' && Number(l.item.stock_quantity) > 0 && q > Number(l.item.stock_quantity)
                   return (
                     <li key={l.key} className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3 sm:grid-cols-[1fr_80px_110px_100px_24px] sm:items-center">
                       <div>
