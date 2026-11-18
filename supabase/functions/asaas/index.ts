@@ -1,4 +1,4 @@
-// NEXO × Asaas: cria a assinatura do lojista e recebe os avisos de pagamento.
+// Komando × Asaas: cria a assinatura do lojista e recebe os avisos de pagamento.
 // Rotas (POST): ?acao=assinar | ?acao=webhook | ?acao=configurar (só admin da plataforma)
 // Segredos: ASAAS_API_KEY (obrigatório), ASAAS_BASE_URL (padrão: sandbox), ASAAS_WEBHOOK_TOKEN (opcional)
 import { createClient } from 'npm:@supabase/supabase-js@2'
@@ -33,7 +33,7 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: 
 async function asaas(path: string, method = 'GET', body?: unknown) {
   const r = await fetch(`${ASAAS_URL}${path}`, {
     method,
-    headers: { 'Content-Type': 'application/json', 'User-Agent': 'NEXO/1.0', access_token: ASAAS_KEY },
+    headers: { 'Content-Type': 'application/json', 'User-Agent': 'Komando/1.0', access_token: ASAAS_KEY },
     body: body ? JSON.stringify(body) : undefined,
   })
   const t = await r.text()
@@ -110,7 +110,7 @@ async function assinar(req: Request) {
   const vencimento = fimAtual && new Date(fimAtual) > new Date()
     ? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date(fimAtual))
     : hoje
-  const nomes = { start: 'NEXO Start', pro: 'NEXO Pro', black: 'NEXO Black' } as const
+  const nomes = { start: 'Komando Start', pro: 'Komando Pro', black: 'Komando Black' } as const
   const sub = await asaas('/subscriptions', 'POST', {
     customer: cliente, billingType: 'UNDEFINED', value: valor, nextDueDate: vencimento, cycle: 'MONTHLY',
     description: `${nomes[plan as 'start']} · ${loja?.name ?? ''}`.slice(0, 500), externalReference: `${store_id}|${plan}`,
@@ -183,7 +183,7 @@ async function configurar(req: Request) {
   const lista = await asaas('/webhooks')
   const existente = (lista?.data ?? []).find((w: any) => w.url === url)
   const corpo = {
-    name: 'NEXO assinaturas', url, email: (await user.auth.getUser()).data.user?.email, enabled: true, interrupted: false,
+    name: 'Komando assinaturas', url, email: (await user.auth.getUser()).data.user?.email, enabled: true, interrupted: false,
     apiVersion: 3, authToken: WEBHOOK_TOKEN, sendType: 'SEQUENTIALLY',
     events: ['PAYMENT_CREATED', 'PAYMENT_UPDATED', 'PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED', 'PAYMENT_OVERDUE', 'PAYMENT_REFUNDED', 'PAYMENT_DELETED'],
   }

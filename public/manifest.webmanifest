@@ -3,7 +3,7 @@
   "short_name": "Komando",
   "description": "Vendas, estoque, fiado e lucro da sua loja em um só lugar.",
   "lang": "pt-BR",
-  "start_url": "/",
+  "start_url": "/entrar",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",

@@ -22,6 +22,7 @@ import NovaVenda from './pages/NovaVenda'
 import VendaDetalhe from './pages/VendaDetalhe'
 import Despesas from './pages/Despesas'
 import Clientes from './pages/Clientes'
+import Landing from './pages/Landing'
 import { Privacidade, Termos } from './pages/Legal'
 import Caixa from './pages/Caixa'
 import Planilhas from './pages/Planilhas'
@@ -64,6 +65,7 @@ export default function App() {
       <Route path="/convite/:code" element={session ? <StoreProvider><ConviteLogado /></StoreProvider> : <Convite />} />
       {!session ? (
         <>
+          <Route path="/" element={<Landing />} />
           <Route path="/entrar" element={<Entrar />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/esqueci-senha" element={<EsqueciSenha />} />
