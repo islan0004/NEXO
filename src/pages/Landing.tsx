@@ -152,7 +152,7 @@ export default function Landing() {
             const destaque = p.id === 'pro'
             return (
               <div key={p.id} className={`relative flex flex-col rounded-2xl border p-7 ${black ? 'border-[#3a3222] bg-[#15120d] text-[#f3ede1]' : destaque ? 'border-2 border-brand-600 bg-white shadow-xl shadow-brand-700/10' : 'border-brand-100 bg-white'}`}>
-                {destaque && <span className="absolute -top-3 left-6 rounded-full bg-brand-700 px-3 py-1 text-xs font-semibold text-white">Mais escolhido</span>}
+                {destaque && <span className="absolute -top-3 left-6 rounded-full bg-brand-700 px-3 py-1 text-xs font-semibold text-white">Recomendado</span>}
                 <div className={`text-lg font-semibold ${black ? 'text-[#d4af37]' : 'text-brand-900'}`}>{p.nome}</div>
                 <p className={`mt-1 text-sm ${black ? 'text-[#a99f8c]' : 'text-muted'}`}>{p.frase}</p>
                 <div className="mt-5 flex items-end gap-1">

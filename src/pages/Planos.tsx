@@ -44,7 +44,7 @@ export default function Planos() {
           const msg = `Olá! Quero assinar o ${p.nome}${preco ? ` (${brl(preco)}/mês)` : ''} para a loja ${current?.name ?? ''}.`
           return (
             <Card key={p.id} className={`relative flex flex-col ${destaque ? 'border-2 border-brand-600' : ''} ${p.id === 'black' ? 'bg-[#15120d] text-[#f3ede1]' : ''}`}>
-              {destaque && <span className="absolute -top-3 left-5"><Badge>Mais escolhido</Badge></span>}
+              {destaque && <span className="absolute -top-3 left-5"><Badge>Recomendado</Badge></span>}
               <h2 className={`text-lg font-semibold ${p.id === 'black' ? 'text-[#d4af37]' : 'text-brand-900'}`}>{p.nome}</h2>
               <p className={`mt-1 text-sm ${p.id === 'black' ? 'text-[#a99f8c]' : 'text-muted'}`}>{p.frase}</p>
               <div className="mt-4 flex items-end gap-1">
