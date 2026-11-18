@@ -14,7 +14,7 @@ export type Relatorio = {
   by_day: { day: string; revenue: number; profit: number; sales: number }[]
   by_method: { method: string; total: number }[]
   top_products: { product_name: string; attributes: Attrs; qtd: number; receita: number; lucro: number }[]
-  card_fees: number; expenses: number; expenses_by_category: { category: string; total: number }[]
+  card_fees: number; expenses: number; returns?: number; expenses_by_category: { category: string; total: number }[]
 }
 
 const ATALHOS: [Atalho, string][] = [['hoje', 'Hoje'], ['7d', '7 dias'], ['mes', 'Este mês'], ['mes_anterior', 'Mês passado'], ['30d', '30 dias']]
@@ -78,7 +78,7 @@ export default function Relatorios() {
       {loading || !r ? <Spinner /> : (
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <Stat label="Faturamento" valor={brl(r.revenue)} dica={r.discounts > 0 ? `${brl(r.discounts)} em descontos` : undefined} />
+            <Stat label="Faturamento" valor={brl(r.revenue)} dica={[r.discounts > 0 ? `${brl(r.discounts)} em descontos` : '', Number(r.returns ?? 0) > 0 ? `já sem ${brl(r.returns)} de devoluções` : ''].filter(Boolean).join(' · ') || undefined} />
             <Stat label="Lucro bruto" valor={brl(r.gross_profit)} dica={`Margem ${pct(margem)}`} destaque />
             <Stat label="Vendas" valor={String(r.sales_count)} dica={r.canceled_count > 0 ? `${r.canceled_count} cancelada(s)` : undefined} />
             <Stat label="Ticket médio" valor={brl(ticket)} />

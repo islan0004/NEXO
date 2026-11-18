@@ -22,6 +22,8 @@ import NovaVenda from './pages/NovaVenda'
 import VendaDetalhe from './pages/VendaDetalhe'
 import Despesas from './pages/Despesas'
 import Clientes from './pages/Clientes'
+import Caixa from './pages/Caixa'
+import Planilhas from './pages/Planilhas'
 import Equipe from './pages/Equipe'
 import Planos from './pages/Planos'
 import Catalogo from './pages/Catalogo'
@@ -79,6 +81,8 @@ export default function App() {
           <Route path="/duvidas" element={<Duvidas />} />
           <Route path="/despesas" element={<Despesas />} />
           <Route path="/clientes" element={<Clientes />} />
+          <Route path="/caixa" element={<Caixa />} />
+          <Route path="/planilhas" element={<Planilhas />} />
           <Route path="/equipe" element={<Equipe />} />
           <Route path="/planos" element={<Planos />} />
           <Route path="/catalogo" element={<Catalogo />} />

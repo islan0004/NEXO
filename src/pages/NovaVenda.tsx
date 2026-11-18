@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { METODOS, brl, labelVariant, parseNum, qtd, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { useToast } from '../lib/toast'
+import { usePlano } from '../lib/planos'
+import LeitorCodigo from '../components/LeitorCodigo'
 import { Dica } from '../components/Tour'
 import { Alert, Button, Card, Spinner, cellInput } from '../components/ui'
 import ClienteSelect, { type Cliente } from '../components/ClienteSelect'
@@ -30,6 +32,8 @@ export default function NovaVenda() {
   const [catalogo, setCatalogo] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
   const [busca, setBusca] = useState('')
+  const [lendo, setLendo] = useState(false)
+  const { pode } = usePlano()
   const [carrinho, setCarrinho] = useState<Linha[]>([])
   const [comDesconto, setComDesconto] = useState(false)
   const [descTipo, setDescTipo] = useState<'fixed' | 'percentage'>('fixed')
@@ -76,6 +80,10 @@ export default function NovaVenda() {
     setPagamentos((ps) => (ps.length === 1 ? [{ ...ps[0], valor: total ? fmt2(total) : '' }] : ps))
   }, [total])
 
+  const lerCodigo = useCallback((c: string) => { setLendo(false); porCodigoRef.current(c) }, [])
+  const porCodigoRef = useRef(porCodigo)
+  porCodigoRef.current = porCodigo
+
   function adicionar(item: Item) {
     setCarrinho((c) => {
       const i = c.findIndex((l) => l.tipo === 'produto' && l.item.variant_id === item.variant_id)
@@ -83,6 +91,14 @@ export default function NovaVenda() {
       return [...c, { tipo: 'produto', key: item.variant_id, item, quantidade: '1', preco: Number(item.sale_price) > 0 ? fmt2(Number(item.sale_price)) : '' }]
     })
     setBusca('')
+  }
+
+  /** Código lido (câmera ou leitor USB): adiciona o item com esse código. */
+  function porCodigo(codigo: string, avisar = true) {
+    const c = codigo.trim().toLowerCase()
+    const achado = catalogo.find((i) => i.sku?.toLowerCase() === c)
+    if (achado) { adicionar(achado); toast(`${achado.product_name} adicionado`); return }
+    if (avisar) { setBusca(codigo.trim()); toast('Código não cadastrado. Cadastre o produto com esse código.', 'erro') }
   }
 
   function adicionarAvulso(descricao = '') {
@@ -164,14 +180,20 @@ export default function NovaVenda() {
       <Dica id="nova-venda" titulo="Registrando uma venda" texto="Busque um produto ou toque em “Valor avulso” para lançar só o valor, sem cadastrar nada. Escolha a forma de pagamento e finalize." />
       <Link to="/vendas" className="text-sm text-brand-700 hover:underline">← Vendas</Link>
       <h1 className="text-2xl font-semibold tracking-tight">Nova venda</h1>
+      {lendo && <LeitorCodigo onClose={() => setLendo(false)} onLido={lerCodigo} />}
 
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <input autoFocus value={busca} onChange={(e) => setBusca(e.target.value)}
-                placeholder={catalogo.length ? 'Buscar produto…' : 'Digite o nome do produto'}
-                className="w-full rounded-xl border border-brand-200 bg-white px-3.5 py-3 text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100" />
+                onKeyDown={(e) => { if (e.key === 'Enter' && busca.trim()) { e.preventDefault(); porCodigo(busca, false) } }}
+                placeholder={catalogo.length ? 'Buscar produto ou código…' : 'Digite o nome do produto'}
+                className={`w-full rounded-xl border border-brand-200 bg-white px-3.5 py-3 text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 ${pode('codigo') ? 'pr-12' : ''}`} />
+              {pode('codigo') && (
+                <button type="button" onClick={() => setLendo(true)} aria-label="Ler código de barras" title="Ler código de barras"
+                  className="absolute right-1.5 top-1.5 grid h-9 w-9 place-items-center rounded-lg text-lg hover:bg-brand-50">📷</button>
+              )}
               {termo && (
                 <ul className="absolute z-20 mt-1 max-h-80 w-full overflow-y-auto rounded-xl border border-brand-100 bg-white shadow-lg">
                   {resultados.map((i) => {

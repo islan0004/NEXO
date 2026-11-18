@@ -1,9 +1,11 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useMemo, useState, type FormEvent } from 'react'
 import { parseNum, supabase, traduzErro, type Attrs } from '../lib/supabase'
 import type { Categoria } from '../lib/categories'
 import CategoriaSelect from '../components/CategoriaSelect'
 import { useStore } from '../lib/store'
 import Bloqueado from '../components/Bloqueado'
+import LeitorCodigo from '../components/LeitorCodigo'
+import { usePlano } from '../lib/planos'
 
 // Sugestões conforme o segmento escolhido no quiz inicial
 const POR_SEGMENTO: Record<string, { exemplo: string; variacoes: boolean; atributos: { nome: string; valores: string }[] }> = {
@@ -47,6 +49,9 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
   const [comVariacoes, setComVariacoes] = useState(false)
   const [mais, setMais] = useState(false)
   const [sku, setSku] = useState('')
+  const [lendo, setLendo] = useState(false)
+  const { pode } = usePlano()
+  const lido = useCallback((c: string) => { setSku(c); setLendo(false) }, [])
   const [custo, setCusto] = useState('')
   const [preco, setPreco] = useState('')
   const [estoque, setEstoque] = useState('')
@@ -127,7 +132,13 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
             <CategoriaSelect categorias={categorias} value={categoria} onChange={setCategoria} criar={criarCategoria} />
             <div className="grid grid-cols-2 gap-3">
               <Field label="Avisar quando tiver menos de" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} placeholder="0" />
-              {!comVariacoes && <Field label="Código (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} />}
+              {!comVariacoes && (
+                <div className="flex items-end gap-2">
+                  <div className="flex-1"><Field label="Código de barras (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} /></div>
+                  {pode('codigo') && <button type="button" onClick={() => setLendo(true)} className="mb-0.5 rounded-xl border border-brand-200 px-3 py-2.5 text-sm hover:bg-brand-50" title="Ler pela câmera">📷</button>}
+                </div>
+              )}
+              {lendo && <LeitorCodigo onClose={() => setLendo(false)} onLido={lido} />}
             </div>
           </div>
         )}
