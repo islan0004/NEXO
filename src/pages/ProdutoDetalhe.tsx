@@ -98,8 +98,7 @@ export default function ProdutoDetalhe() {
           <thead className="bg-brand-50/60 text-left text-xs uppercase tracking-wide text-muted">
             <tr>
               {temVariacoes && <th className="px-4 py-2 font-medium">Variação</th>}
-              <th className="hidden px-4 py-2 font-medium sm:table-cell">SKU</th>
-              <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">Custo</th>
+                            <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">Custo</th>
               <th className="px-4 py-2 text-right font-medium">Preço</th>
               <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">Margem</th>
               <th className="px-4 py-2 text-right font-medium">Estoque</th>
@@ -114,15 +113,14 @@ export default function ProdutoDetalhe() {
               return (
                 <tr key={v.id} className={v.active ? '' : 'opacity-50'}>
                   {temVariacoes && <td className="px-4 py-2.5 font-medium">{labelVariant(v.attributes)} {!v.active && <Badge tone="gray">Inativa</Badge>}</td>}
-                  <td className="hidden px-4 py-2.5 text-muted sm:table-cell">{v.sku ?? '—'}</td>
-                  <td className="hidden px-4 py-2.5 text-right sm:table-cell">{brl(custo)}</td>
+                                    <td className="hidden px-4 py-2.5 text-right sm:table-cell">{brl(custo)}</td>
                   <td className="px-4 py-2.5 text-right">{brl(preco)}</td>
                   <td className="hidden px-4 py-2.5 text-right text-muted sm:table-cell">{Math.round(margem)}%</td>
                   <td className={`px-4 py-2.5 text-right font-medium ${baixo && v.active ? 'text-red-600' : ''}`}>
-                    {qtd(v.stock_quantity)}<span className="block text-xs font-normal text-muted">mín. {qtd(v.min_stock)}</span>
+                    {qtd(v.stock_quantity)}<span className="block text-xs font-normal text-muted">avisa com {qtd(v.min_stock)}</span>
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-right">
-                    <button className="text-brand-700 hover:underline" onClick={() => setMovVar(v)}>Estoque</button>
+                    <button className="text-brand-700 hover:underline" onClick={() => setMovVar(v)}>Ajustar estoque</button>
                     <button className="ml-3 text-brand-700 hover:underline" onClick={() => setEditVar(v)}>Editar</button>
                   </td>
                 </tr>
@@ -227,11 +225,11 @@ function EditarVariante({ v, temVariacoes, onClose, onSaved }: { v: Variante; te
         <div className="grid grid-cols-2 gap-3">
           <Field label="Custo (R$)" inputMode="decimal" value={custo} onChange={(e) => setCusto(e.target.value)} />
           <Field label="Preço de venda (R$)" inputMode="decimal" value={preco} onChange={(e) => setPreco(e.target.value)} />
-          <Field label="Estoque mínimo" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} />
-          <Field label="SKU" value={sku} onChange={(e) => setSku(e.target.value)} />
+          <Field label="Avisar com menos de" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} />
+          <Field label="Código (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} />
         </div>
         {temVariacoes && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} /> Variação ativa</label>}
-        <p className="text-xs text-muted">Para mudar a quantidade em estoque, use o botão “Estoque”, que registra a movimentação no histórico.</p>
+        <p className="text-xs text-muted">Para mudar a quantidade, use “Ajustar estoque”.</p>
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Salvar</Button></div>
       </form>
     </Modal>
@@ -277,9 +275,9 @@ function MovimentarEstoque({ v, titulo, onClose, onSaved }: { v: Variante; titul
   }
 
   const opcoes = [
-    { k: 'entrada', l: 'Entrada (compra)' },
-    { k: 'saida', l: 'Saída / perda' },
-    { k: 'corrigir', l: 'Corrigir contagem' },
+    { k: 'entrada', l: 'Chegou mercadoria' },
+    { k: 'saida', l: 'Saiu / perdeu' },
+    { k: 'corrigir', l: 'Contei e está diferente' },
   ] as const
 
   return (
@@ -293,7 +291,7 @@ function MovimentarEstoque({ v, titulo, onClose, onSaved }: { v: Variante; titul
               className={`rounded-lg px-2 py-2 text-xs font-medium ${tipo === o.k ? 'bg-white text-brand-800 shadow-sm' : 'text-muted'}`}>{o.l}</button>
           ))}
         </div>
-        <Field label={tipo === 'corrigir' ? 'Quantidade real contada' : 'Quantidade'} inputMode="decimal" required value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
+        <Field label={tipo === 'corrigir' ? 'Quantas tem de verdade?' : 'Quantidade'} inputMode="decimal" required value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
         {tipo === 'entrada' && <Field label="Custo unitário desta compra (opcional)" inputMode="decimal" value={custo} onChange={(e) => setCusto(e.target.value)} placeholder={Number(v.unit_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} />}
         <Field label={tipo === 'entrada' ? 'Observação (opcional)' : 'Motivo'} required={tipo !== 'entrada'} value={motivo} onChange={(e) => setMotivo(e.target.value)}
           placeholder={tipo === 'saida' ? 'Ex.: peça com defeito, brinde' : tipo === 'corrigir' ? 'Ex.: contagem de fim de mês' : 'Ex.: fornecedor X'} />
@@ -342,8 +340,8 @@ function NovaVariante({ productId, chaves, base, onClose, onSaved }: {
           <Field label="Custo (R$)" inputMode="decimal" value={custo} onChange={(e) => setCusto(e.target.value)} />
           <Field label="Preço (R$)" inputMode="decimal" value={preco} onChange={(e) => setPreco(e.target.value)} />
           <Field label="Estoque inicial" inputMode="decimal" value={estoque} onChange={(e) => setEstoque(e.target.value)} placeholder="0" />
-          <Field label="Estoque mínimo" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} />
-          <Field label="SKU (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} />
+          <Field label="Avisar com menos de" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} />
+          <Field label="Código (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} />
         </div>
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Adicionar</Button></div>
       </form>

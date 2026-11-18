@@ -7,18 +7,20 @@ import TemaPicker from '../components/TemaPicker'
 const FAQ: { grupo: string; itens: [string, string][] }[] = [
   { grupo: 'Começando', itens: [
     ['Como instalo o NEXO no celular?', 'No Android (Chrome), abra o menu do NEXO e toque em “Instalar o app”. No iPhone, abra no Safari, toque em Compartilhar (quadrado com seta) e depois em “Adicionar à Tela de Início”.'],
-    ['Por onde começo?', 'Cadastre seus produtos em “Produtos e estoque” com custo, preço e quantidade. Depois é só vender pelo botão “Vender”.'],
+    ['Por onde começo?', 'Pode começar vendendo direto: toque em “Vender” e use “Valor avulso” para lançar só o valor. Quando der, cadastre os produtos que mais vendem para controlar estoque e lucro.'],
+    ['Preciso cadastrar produto para vender?', 'Não. Na tela de venda, toque em “Valor avulso” e digite só o valor (e, se quiser, o que foi vendido). Venda avulsa não mexe no estoque.'],
     ['Preciso cadastrar tudo de uma vez?', 'Não. Cadastre primeiro os produtos que mais vendem e vá completando com o tempo.'],
   ] },
   { grupo: 'Produtos e estoque', itens: [
-    ['Como cadastro tamanho e cor?', 'No cadastro do produto, marque “Este produto tem variações” e escreva os valores separados por vírgula (ex.: Tamanho: P, M, G). O NEXO monta todas as combinações para você colocar o estoque de cada uma.'],
-    ['Chegou mercadoria. Como dou entrada?', 'Abra o produto, toque em “Estoque” na variação e escolha “Entrada (compra)”. Se informar o custo da compra, ele vira o novo custo do produto.'],
-    ['Contei o estoque e está diferente. E agora?', 'No produto, toque em “Estoque” e escolha “Corrigir contagem”. Digite a quantidade real; o NEXO calcula a diferença e registra no histórico.'],
+    ['Como cadastro tamanho e cor?', 'No cadastro do produto, marque “Tem tamanhos ou cores diferentes” e escreva as opções separadas por vírgula (ex.: Tamanho: P, M, G). O NEXO monta as combinações para você colocar a quantidade de cada uma.'],
+    ['Chegou mercadoria. Como dou entrada?', 'Abra o produto, toque em “Ajustar estoque” e escolha “Chegou mercadoria”. Se informar quanto pagou, esse vira o novo custo do produto.'],
+    ['Contei o estoque e está diferente. E agora?', 'No produto, toque em “Ajustar estoque” e escolha “Contei e está diferente”. Digite quantas tem de verdade; o NEXO acerta sozinho.'],
     ['Por que o custo é importante?', 'Sem o custo, o NEXO não consegue calcular o lucro. Com ele, cada venda mostra quanto você ganhou de verdade.'],
   ] },
   { grupo: 'Vendas', itens: [
     ['Como dou desconto?', 'Na tela de venda, use o campo Desconto em R$ ou em %. O total já é recalculado.'],
     ['O cliente pagou parte no Pix e parte em dinheiro.', 'Toque em “Dividir pagamento” e informe cada valor. Se for dinheiro, digite quanto recebeu para ver o troco.'],
+    ['O produto acabou no estoque. Consigo vender?', 'Consegue. O NEXO não trava a venda: o estoque fica negativo e aparece em vermelho, para você acertar depois em “Ajustar estoque”.'],
     ['Errei uma venda. Como cancelo?', 'Abra a venda em “Vendas” e toque em “Cancelar venda”. Os produtos voltam para o estoque e a venda sai do faturamento. Só o dono ou gerente pode cancelar.'],
     ['Como mando o comprovante para o cliente?', 'Depois de finalizar, toque em “Enviar comprovante”. Abre o WhatsApp com a mensagem pronta.'],
   ] },

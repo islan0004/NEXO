@@ -7,8 +7,8 @@ type Passo = { alvos: string[]; titulo: string; texto: string; gestor?: boolean 
 /** Tutorial da primeira entrada: aponta para cada parte do app. Sem alvo visível, aparece centralizado. */
 const PASSOS: Passo[] = [
   { alvos: [], titulo: 'Bem-vindo ao NEXO! 🎉', texto: 'Vou te mostrar rapidinho onde fica cada coisa. São poucos passos.' },
-  { alvos: ['[data-tour="vender-fab"]', '[data-tour="nova-venda"]'], titulo: 'Vender', texto: 'Toque aqui para registrar uma venda. Busque o produto, escolha o pagamento e pronto: o estoque baixa sozinho.' },
-  { alvos: ['[data-tour="nav-produtos"]', '[data-tour="menu"]'], titulo: 'Produtos e estoque', texto: 'Cadastre seus produtos com custo e preço. Com o custo, o NEXO calcula o seu lucro em cada venda.' },
+  { alvos: ['[data-tour="vender-fab"]', '[data-tour="nova-venda"]'], titulo: 'Vender', texto: 'Toque aqui para vender. Escolha um produto ou use “Valor avulso” para lançar só o valor, sem cadastrar nada.' },
+  { alvos: ['[data-tour="nav-produtos"]', '[data-tour="menu"]'], titulo: 'Produtos e estoque', texto: 'Cadastre seus produtos com nome, preço e quantidade. Se informar quanto pagou, o NEXO mostra o lucro.' },
   { alvos: ['[data-tour="nav-fiado"]', '[data-tour="menu"]'], titulo: 'Fiado', texto: 'Venda fiado com o nome do cliente, receba aos poucos e cobre pelo WhatsApp com um toque.' },
   { alvos: ['[data-tour="nav-relatorios"]', '[data-tour="menu"]'], titulo: 'Relatórios', texto: 'Veja faturamento, lucro e os produtos que mais vendem no dia, na semana ou no mês.', gestor: true },
   { alvos: ['[data-tour="fechar-dia"]'], titulo: 'Fechar o dia', texto: 'No fim do expediente, mande o resumo do dia para o seu WhatsApp.', gestor: true },

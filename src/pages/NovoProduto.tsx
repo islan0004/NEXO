@@ -43,7 +43,8 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
   const sugestao = POR_SEGMENTO[current?.segment ?? ''] ?? PADRAO
   const [nome, setNome] = useState('')
   const [categoria, setCategoria] = useState('')
-  const [comVariacoes, setComVariacoes] = useState(sugestao.variacoes)
+  const [comVariacoes, setComVariacoes] = useState(false)
+  const [mais, setMais] = useState(false)
   const [sku, setSku] = useState('')
   const [custo, setCusto] = useState('')
   const [preco, setPreco] = useState('')
@@ -65,15 +66,15 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
     e.preventDefault(); setErro('')
     if (!nome.trim()) return setErro('Informe o nome do produto.')
     const c = parseNum(custo), p = parseNum(preco), m = parseNum(minimo)
-    if ([c, p, m].some((n) => Number.isNaN(n) || n < 0)) return setErro('Confira custo, preço e estoque mínimo.')
+    if ([c, p, m].some((n) => Number.isNaN(n) || n < 0)) return setErro('Confira preço, custo e aviso de estoque.')
 
     let variants: object[]
     if (!comVariacoes) {
       const est = parseNum(estoque)
-      if (Number.isNaN(est) || est < 0) return setErro('Confira o estoque inicial.')
+      if (Number.isNaN(est) || est < 0) return setErro('Confira a quantidade.')
       variants = [{ sku, attributes: {}, unit_cost: c, sale_price: p, initial_stock: est, min_stock: m }]
     } else {
-      if (!combinacoes.length) return setErro('Preencha ao menos um atributo com valores (ex.: Tamanho: P, M, G).')
+      if (!combinacoes.length) return setErro('Escreva os tamanhos ou cores (ex.: Tamanho: P, M, G).')
       if (combinacoes.length > 100) return setErro('Máximo de 100 variações por produto.')
       variants = []
       for (const attrs of combinacoes) {
@@ -98,29 +99,40 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
     <Modal title="Novo produto" onClose={onClose} wide={comVariacoes}>
       <form onSubmit={onSubmit} className="space-y-4">
         {erro && <Alert>{erro}</Alert>}
-        <Field label="Nome do produto" required value={nome} onChange={(e) => setNome(e.target.value)} placeholder={sugestao.exemplo} />
-        <CategoriaSelect categorias={categorias} value={categoria} onChange={setCategoria} criar={criarCategoria} />
-
-        <div className="grid grid-cols-3 gap-3">
-          <Field label="Custo (R$)" inputMode="decimal" value={custo} onChange={(e) => setCusto(e.target.value)} placeholder="0,00" />
+        <Field label="Nome do produto" required autoFocus value={nome} onChange={(e) => setNome(e.target.value)} placeholder={sugestao.exemplo} />
+        <div className="grid grid-cols-2 gap-3">
           <Field label="Preço de venda (R$)" inputMode="decimal" value={preco} onChange={(e) => setPreco(e.target.value)} placeholder="0,00" />
-          <Field label="Estoque mínimo" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} placeholder="0" />
+          {!comVariacoes
+            ? <Field label="Quantidade que tem" inputMode="decimal" value={estoque} onChange={(e) => setEstoque(e.target.value)} placeholder="0" />
+            : <div />}
+        </div>
+        <div>
+          <Field label="Quanto você pagou (custo)" inputMode="decimal" value={custo} onChange={(e) => setCusto(e.target.value)} placeholder="Opcional" />
+          <p className="mt-1 text-xs text-muted">Com o custo, o NEXO mostra o seu lucro em cada venda.</p>
         </div>
 
         <label className="flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-medium">
           <input type="checkbox" checked={comVariacoes} onChange={(e) => setComVariacoes(e.target.checked)} />
-          Este produto tem variações (tamanho, cor…)
+          Tem tamanhos ou cores diferentes
         </label>
 
-        {!comVariacoes ? (
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Estoque inicial" inputMode="decimal" value={estoque} onChange={(e) => setEstoque(e.target.value)} placeholder="0" />
-            <Field label="Código / SKU (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} />
+        <button type="button" onClick={() => setMais((m) => !m)} className="text-sm font-medium text-brand-700 hover:underline">
+          {mais ? '− Menos opções' : '+ Mais opções (categoria, aviso de estoque, código)'}
+        </button>
+        {mais && (
+          <div className="space-y-3 rounded-xl border border-brand-100 p-3">
+            <CategoriaSelect categorias={categorias} value={categoria} onChange={setCategoria} criar={criarCategoria} />
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Avisar quando tiver menos de" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} placeholder="0" />
+              {!comVariacoes && <Field label="Código (opcional)" value={sku} onChange={(e) => setSku(e.target.value)} />}
+            </div>
           </div>
-        ) : (
+        )}
+
+        {!comVariacoes ? null : (
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-sm text-muted">Separe os valores por vírgula. Deixe em branco o atributo que não usar.</p>
+              <p className="text-sm text-muted">Escreva as opções separadas por vírgula. Ex.: P, M, G</p>
               {atributos.map((a, i) => (
                 <div key={i} className="grid grid-cols-[140px_1fr_auto] gap-2">
                   <input className={cellInput} value={a.nome} onChange={(e) => setAttr(i, 'nome', e.target.value)} placeholder="Atributo" />
@@ -137,7 +149,7 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
               <div className="overflow-x-auto rounded-xl border border-brand-100">
                 <table className="w-full text-sm">
                   <thead className="bg-brand-50/60 text-left text-xs text-muted">
-                    <tr><th className="px-3 py-2">Variação</th><th className="px-3 py-2">Estoque inicial</th><th className="px-3 py-2">Preço (se diferente)</th><th className="px-3 py-2">SKU</th></tr>
+                    <tr><th className="px-3 py-2">Variação</th><th className="px-3 py-2">Quantidade</th><th className="px-3 py-2">Preço (se diferente)</th></tr>
                   </thead>
                   <tbody className="divide-y divide-brand-100">
                     {combinacoes.map((attrs) => {
@@ -147,7 +159,6 @@ export default function NovoProduto({ storeId, categorias, criarCategoria, onClo
                           <td className="whitespace-nowrap px-3 py-2 font-medium">{k}</td>
                           <td className="px-3 py-2"><input className={cellInput} inputMode="decimal" value={l?.estoque ?? ''} onChange={(e) => setLinha(k, 'estoque', e.target.value)} placeholder="0" /></td>
                           <td className="px-3 py-2"><input className={cellInput} inputMode="decimal" value={l?.preco ?? ''} onChange={(e) => setLinha(k, 'preco', e.target.value)} placeholder={preco || '0,00'} /></td>
-                          <td className="px-3 py-2"><input className={cellInput} value={l?.sku ?? ''} onChange={(e) => setLinha(k, 'sku', e.target.value)} /></td>
                         </tr>
                       )
                     })}

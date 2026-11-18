@@ -73,7 +73,7 @@ export default function Produtos() {
 
   return (
     <div className="space-y-5">
-      <Dica id="produtos" titulo="Produtos e estoque" texto="Toque em “+ Novo produto” para cadastrar. Informe o custo: é com ele que o NEXO calcula o lucro. Produtos com estoque abaixo do mínimo ficam em vermelho." />
+      <Dica id="produtos" titulo="Produtos e estoque" texto="Toque em “+ Novo produto”: só nome, preço e quantidade já resolvem. Informe quanto pagou para ver o lucro." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Produtos e estoque</h1>
