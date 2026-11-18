@@ -219,7 +219,7 @@ function Celular() {
       <div className="rounded-[2.4rem] border-[10px] border-[#15112a] bg-brand-50 shadow-2xl shadow-brand-900/25">
         <div className="space-y-3 p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5"><span className="grid h-6 w-6 place-items-center rounded-md bg-brand-700 text-[11px] font-bold text-white">K</span><span className="text-sm font-semibold">Komando</span></div>
+            <div className="flex items-center gap-1.5"><svg viewBox="0 0 64 64" className="h-6 w-6" aria-hidden><rect width="64" height="64" rx="16" fill="#6D28D9" /><path d="M21 18v28M25.5 32.5L41.5 46M25.5 31.5L43 16.5M34 16.5h9v9" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg><span className="text-sm font-bold"><span className="text-brand-700">K</span>omando</span></div>
             <span className="text-[11px] text-muted">Hoje</span>
           </div>
           <div className="grid grid-cols-2 gap-2">

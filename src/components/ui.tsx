@@ -3,8 +3,8 @@ import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAt
 export function Logo({ className = '' }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden><rect width="32" height="32" rx="8" fill="var(--color-brand-700)" /><path d="M11.5 9v14M21 9l-7.5 7 7.5 7" stroke="var(--color-white)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      <span className="text-xl font-semibold tracking-tight text-brand-900">Komando</span>
+      <svg viewBox="0 0 64 64" className="h-8 w-8" aria-hidden><rect width="64" height="64" rx="16" fill="var(--color-brand-700)" /><path d="M21 18v28M25.5 32.5L41.5 46M25.5 31.5L43 16.5M34 16.5h9v9" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      <span className="text-xl font-bold tracking-tight text-ink"><span className="text-brand-700">K</span>omando</span>
     </div>
   )
 }
