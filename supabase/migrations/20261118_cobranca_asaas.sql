@@ -4,3 +4,5 @@
 -- Edge Function: supabase/functions/asaas (verify_jwt = false; autentica sozinha).
 -- "chave_cobranca_no_banco": tabela platform_secrets (sem acesso para o app) + admin_set_billing_key /
 -- admin_billing_key_info. A função asaas lê a chave do segredo ASAAS_API_KEY ou, se não houver, dessa tabela.
+-- "pagamento_asaas_metodo": trigger em platform_payments traduz CREDIT_CARD/DEBIT_CARD -> card, PIX -> pix, resto -> other.
+-- Testado em 18/11 no sandbox: assinatura Pro criada, pagamento simulado, loja ativada até 18/12 pelo webhook.
