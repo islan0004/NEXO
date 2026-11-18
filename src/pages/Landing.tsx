@@ -78,7 +78,7 @@ export default function Landing() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[1.1fr_0.9fr]">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-800">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" /> Feito para pequenas lojas
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" /> Feito para lojistas
             </span>
             <h1 className="mt-5 text-4xl font-semibold leading-[1.08] tracking-tight md:text-6xl">
               Sua loja no <span className="text-brand-700">Komando</span>.
