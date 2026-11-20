@@ -91,13 +91,36 @@ export default function Landing() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link to="/cadastro" className="rounded-xl bg-brand-700 px-6 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-brand-700/25 transition hover:bg-brand-800 active:scale-[.98]">{cta}</Link>
-              <a href="#recursos" className="rounded-xl border border-brand-200 bg-white px-6 py-3.5 text-center text-base font-medium text-brand-800 hover:bg-brand-50">Ver o que ele faz</a>
+              <a href="#video" className="rounded-xl border border-brand-200 bg-white px-6 py-3.5 text-center text-base font-medium text-brand-800 hover:bg-brand-50">▶ Ver como funciona (1 min)</a>
             </div>
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
               <li>✓ Não pede cartão para testar</li><li>✓ Conta pronta em 1 minuto</li><li>✓ Celular e computador</li>
             </ul>
           </div>
           <Celular />
+        </div>
+      </section>
+
+      {/* vídeo */}
+      <section id="video" className="scroll-mt-16 px-5 pb-16 md:pb-24">
+        <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Veja o Komando em 1 minuto</h2>
+            <p className="mt-3 text-muted md:text-lg">Uma venda, o estoque, o fiado e o lucro do mês, no app de verdade.</p>
+          </div>
+          <div className="mt-8 overflow-hidden rounded-2xl border border-brand-100 bg-[#15112a] shadow-2xl shadow-brand-900/20">
+            <video
+              className="block aspect-video w-full"
+              src="/video/komando-como-funciona.mp4"
+              poster="/video/komando-capa.jpg"
+              controls
+              playsInline
+              preload="none"
+            />
+          </div>
+          <div className="mt-6 text-center">
+            <Link to="/cadastro" className="inline-block rounded-xl bg-brand-700 px-6 py-3.5 font-semibold text-white shadow-lg shadow-brand-700/25 hover:bg-brand-800">{cta}</Link>
+          </div>
         </div>
       </section>
 
