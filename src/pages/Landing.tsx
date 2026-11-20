@@ -78,8 +78,8 @@ export default function Landing() {
       {/* hero */}
       <section className="relative overflow-hidden px-5 pb-16 pt-12 md:pb-24 md:pt-20">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_70%_10%,#ede9fe_0%,transparent_70%),radial-gradient(40%_40%_at_10%_90%,#f5f3ff_0%,transparent_70%)]" />
-        <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[1.1fr_0.9fr]">
-          <div>
+        <div className="mx-auto grid max-w-6xl items-center gap-8 md:grid-cols-[1fr_1.1fr] md:gap-x-12 md:gap-y-8">
+          <div className="md:col-start-1 md:row-start-1 md:self-end">
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-800">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-600" /> Feito para lojistas
             </span>
@@ -89,30 +89,24 @@ export default function Landing() {
             <p className="mt-5 max-w-xl text-lg text-muted md:text-xl">
               Vendas, estoque, fiado, caixa e lucro em um só lugar. Troque o caderno e a planilha por um app simples, direto no seu celular.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link to="/cadastro" className="rounded-xl bg-brand-700 px-6 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-brand-700/25 transition hover:bg-brand-800 active:scale-[.98]">{cta}</Link>
-              <a href="#video" className="rounded-xl border border-brand-200 bg-white px-6 py-3.5 text-center text-base font-medium text-brand-800 hover:bg-brand-50">▶ Ver como funciona (1 min)</a>
+          </div>
+          <div id="video" className="scroll-mt-20 md:col-start-2 md:row-span-2 md:row-start-1">
+            <div className="relative">
+              <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-brand-300/40 to-brand-100/0 blur-2xl" />
+              <div className="overflow-hidden rounded-2xl border border-brand-100 bg-[#15112a] shadow-2xl shadow-brand-900/25">
+                <VideoDemo />
+              </div>
+            </div>
+            <p className="mt-3 text-center text-xs text-muted">O app de verdade, em 1 minuto</p>
+          </div>
+          <div className="md:col-start-1 md:row-start-2 md:self-start">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link to="/cadastro" className="pulsar rounded-xl bg-brand-700 px-6 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-brand-700/25 transition hover:bg-brand-800 active:scale-[.98]">{cta}</Link>
+              <a href="#planos" className="rounded-xl border border-brand-200 bg-white px-6 py-3.5 text-center text-base font-medium text-brand-800 hover:bg-brand-50">Ver planos e preços</a>
             </div>
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
               <li>✓ Não pede cartão para testar</li><li>✓ Conta pronta em 1 minuto</li><li>✓ Celular e computador</li>
             </ul>
-          </div>
-          <Celular />
-        </div>
-      </section>
-
-      {/* vídeo */}
-      <section id="video" className="scroll-mt-16 px-5 pb-16 md:pb-24">
-        <div className="mx-auto max-w-4xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Veja o Komando em 1 minuto</h2>
-            <p className="mt-3 text-muted md:text-lg">Uma venda, o estoque, o fiado e o lucro do mês, no app de verdade.</p>
-          </div>
-          <div className="mt-8 overflow-hidden rounded-2xl border border-brand-100 bg-[#15112a] shadow-2xl shadow-brand-900/20">
-            <VideoDemo />
-          </div>
-          <div className="mt-6 text-center">
-            <Link to="/cadastro" className="inline-block rounded-xl bg-brand-700 px-6 py-3.5 font-semibold text-white shadow-lg shadow-brand-700/25 hover:bg-brand-800">{cta}</Link>
           </div>
         </div>
       </section>
@@ -162,7 +156,7 @@ export default function Landing() {
           ))}
         </div>
         <div className="mt-10 text-center">
-          <Link to="/cadastro" className="inline-block rounded-xl bg-white px-6 py-3.5 font-semibold text-brand-800 hover:bg-brand-50">{cta}</Link>
+          <Link to="/cadastro" className="pulsar pulsar-claro inline-block rounded-xl bg-white px-6 py-3.5 font-semibold text-brand-800 hover:bg-brand-50">{cta}</Link>
         </div>
       </Secao>
 
@@ -213,7 +207,7 @@ export default function Landing() {
         <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-brand-700 to-brand-900 px-6 py-12 text-center text-white md:px-12 md:py-16">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Assuma o komando da sua loja.</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/80">Crie sua conta agora e faça sua primeira venda em minutos.</p>
-          <Link to="/cadastro" className="mt-8 inline-block rounded-xl bg-white px-7 py-3.5 font-semibold text-brand-800 hover:bg-brand-50">{cta}</Link>
+          <Link to="/cadastro" className="pulsar pulsar-claro mt-8 inline-block rounded-xl bg-white px-7 py-3.5 font-semibold text-brand-800 hover:bg-brand-50">{cta}</Link>
           {precos?.whatsapp && (
             <div className="mt-4 text-sm"><a href={abrirWhatsApp('Olá! Quero saber mais sobre o Komando para a minha loja.', precos.whatsapp)} target="_blank" rel="noreferrer" className="text-white/80 underline hover:text-white">Prefere conversar? Fale com a gente no WhatsApp</a></div>
           )}
@@ -263,49 +257,6 @@ function VideoDemo() {
           </span>
         </button>
       )}
-    </div>
-  )
-}
-
-/** Ilustração do app (valores de exemplo). */
-function Celular() {
-  return (
-    <div className="relative mx-auto w-full max-w-[320px]">
-      <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-brand-300/40 to-brand-100/0 blur-2xl" />
-      <div className="rounded-[2.4rem] border-[10px] border-[#15112a] bg-brand-50 shadow-2xl shadow-brand-900/25">
-        <div className="space-y-3 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5"><svg viewBox="0 0 64 64" className="h-6 w-6" aria-hidden><rect width="64" height="64" rx="16" fill="#6D28D9" /><path d="M21 18v28M25.5 32.5L41.5 46M25.5 31.5L43 16.5M34 16.5h9v9" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg><span className="text-sm font-bold"><span className="text-brand-700">K</span>omando</span></div>
-            <span className="text-[11px] text-muted">Hoje</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Mini label="Vendido hoje" valor="R$ 1.280,00" />
-            <Mini label="Lucro do mês" valor="R$ 6.940,00" verde />
-          </div>
-          <div className="rounded-xl bg-white p-3">
-            <div className="text-[11px] text-muted">Meta do mês</div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-brand-100"><div className="h-full w-[68%] rounded-full bg-brand-600" /></div>
-            <div className="mt-1 text-[11px] text-muted">68% · faltam R$ 145 por dia</div>
-          </div>
-          <div className="rounded-xl bg-white p-3 text-[12px]">
-            <div className="mb-1.5 text-[11px] text-muted">Fiado a receber</div>
-            {[['Ana Paula', 'R$ 180,00'], ['Carla M.', 'R$ 95,50'], ['Juliana S.', 'R$ 240,00']].map(([n, v]) => (
-              <div key={n} className="flex justify-between py-1"><span>{n}</span><span className="font-medium">{v}</span></div>
-            ))}
-          </div>
-          <div className="rounded-xl bg-brand-700 py-2.5 text-center text-sm font-semibold text-white">+ Vender</div>
-        </div>
-      </div>
-      <p className="mt-3 text-center text-[11px] text-muted">Ilustração com valores de exemplo</p>
-    </div>
-  )
-}
-
-function Mini({ label, valor, verde }: { label: string; valor: string; verde?: boolean }) {
-  return (
-    <div className="rounded-xl bg-white p-3">
-      <div className="text-[11px] text-muted">{label}</div>
-      <div className={`mt-0.5 text-sm font-semibold ${verde ? 'text-emerald-700' : 'text-brand-900'}`}>{valor}</div>
     </div>
   )
 }

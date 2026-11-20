@@ -67,3 +67,19 @@ main > * { animation: nexo-fade-up .25s ease-out }
 
 @keyframes nexo-step-in { from { opacity: 0; transform: translateX(14px) } to { opacity: 1; transform: none } }
 .nexo-step { animation: nexo-step-in .28s ease-out }
+
+/* Botões principais da landing: pulso suave de anel (respeita quem desativou animações) */
+@keyframes komando-pulso {
+  0% { box-shadow: 0 0 0 0 rgb(109 40 217 / .55) }
+  70% { box-shadow: 0 0 0 14px rgb(109 40 217 / 0) }
+  100% { box-shadow: 0 0 0 0 rgb(109 40 217 / 0) }
+}
+@keyframes komando-pulso-claro {
+  0% { box-shadow: 0 0 0 0 rgb(255 255 255 / .6) }
+  70% { box-shadow: 0 0 0 14px rgb(255 255 255 / 0) }
+  100% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0) }
+}
+.pulsar { animation: komando-pulso 2.2s ease-out infinite }
+.pulsar.pulsar-claro { animation-name: komando-pulso-claro }
+.pulsar:hover { animation-play-state: paused }
+@media (prefers-reduced-motion: reduce) { .pulsar { animation: none } }
