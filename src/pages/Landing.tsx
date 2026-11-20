@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { brl, supabase } from '../lib/supabase'
 import { PLANOS } from '../lib/planos'
@@ -109,14 +109,7 @@ export default function Landing() {
             <p className="mt-3 text-muted md:text-lg">Uma venda, o estoque, o fiado e o lucro do mês, no app de verdade.</p>
           </div>
           <div className="mt-8 overflow-hidden rounded-2xl border border-brand-100 bg-[#15112a] shadow-2xl shadow-brand-900/20">
-            <video
-              className="block aspect-video w-full"
-              src="/video/komando-como-funciona.mp4"
-              poster="/video/komando-capa.jpg"
-              controls
-              playsInline
-              preload="none"
-            />
+            <VideoDemo />
           </div>
           <div className="mt-6 text-center">
             <Link to="/cadastro" className="inline-block rounded-xl bg-brand-700 px-6 py-3.5 font-semibold text-white shadow-lg shadow-brand-700/25 hover:bg-brand-800">{cta}</Link>
@@ -237,6 +230,39 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+    </div>
+  )
+}
+
+/** Vídeo de demonstração: capa com botão de play; os controles aparecem só depois de tocar. */
+function VideoDemo() {
+  const ref = useRef<HTMLVideoElement>(null)
+  const [tocando, setTocando] = useState(false)
+  return (
+    <div className="relative">
+      <video
+        ref={ref}
+        className="block aspect-video w-full"
+        src="/video/komando-como-funciona.mp4"
+        poster="/video/komando-capa.jpg"
+        controls={tocando}
+        playsInline
+        preload="none"
+      />
+      {!tocando && (
+        <button
+          onClick={() => { setTocando(true); ref.current?.play() }}
+          aria-label="Assistir ao vídeo"
+          className="group absolute inset-0 grid place-items-center bg-[#15112a]/45 transition hover:bg-[#15112a]/30"
+        >
+          <span className="flex flex-col items-center gap-3">
+            <span className="grid h-16 w-16 place-items-center rounded-full bg-white shadow-xl transition group-hover:scale-105 md:h-20 md:w-20">
+              <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7 fill-brand-700 md:h-8 md:w-8" aria-hidden><path d="M8 5v14l11-7z" /></svg>
+            </span>
+            <span className="rounded-full bg-black/40 px-3 py-1 text-sm font-medium text-white">Assistir · 1 min</span>
+          </span>
+        </button>
+      )}
     </div>
   )
 }
