@@ -99,10 +99,10 @@ export default function ClienteDetalhe() {
                     ? <span className="font-medium">Dívida anterior</span>
                     : <span className="font-medium">{l.method === 'Vale de devolução' ? `Vale de devolução · venda #${l.sale_number}` : `Pagamento · ${METODOS[l.method] ?? l.method}`}</span>}
                   {l.canceled && <Badge tone="gray">{l.kind === 'opening' ? 'Excluída' : 'Cancelada'}</Badge>}
-                  {l.kind === 'opening' && !l.canceled && canManage && <button onClick={() => excluirDivida(l)} className="ml-2 text-xs text-red-600 hover:underline">Excluir</button>}
+                  {l.kind === 'opening' && !l.canceled && canManage && devendo >= Number(l.amount) && <button onClick={() => excluirDivida(l)} className="ml-2 text-xs text-red-600 hover:underline">Excluir</button>}
                   <div className="text-xs text-muted">{new Date(l.happened_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}{l.note ? ` · ${l.note}` : ''}</div>
                 </div>
-                <div className={`font-medium ${l.kind === 'payment' ? 'text-emerald-700' : ''} ${l.canceled ? 'line-through' : ''}`}>{l.kind === 'payment' ? '−' : '+'} {brl(l.amount)}</div>
+                <div className={`shrink-0 whitespace-nowrap font-medium ${l.kind === 'payment' ? 'text-emerald-700' : ''} ${l.canceled ? 'line-through' : ''}`}>{l.kind === 'payment' ? '−' : '+'} {brl(l.amount)}</div>
               </li>
             ))}
           </ul>
