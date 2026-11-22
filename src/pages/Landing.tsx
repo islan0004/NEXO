@@ -5,6 +5,7 @@ import { PLANOS } from '../lib/planos'
 import { abrirWhatsApp } from '../lib/mensagens'
 import { Logo } from '../components/ui'
 import { usarTemaDaMarca } from '../lib/temas'
+import { codigoIndicacao } from '../lib/indicacao'
 
 type Precos = { start: number; pro: number; black: number; trial_days: number; whatsapp: string | null }
 
@@ -52,12 +53,15 @@ function Secao({ id, titulo, sub, children, className = '' }: { id?: string; tit
 export default function Landing() {
   const [precos, setPrecos] = useState<Precos | null>(null)
   const [aberta, setAberta] = useState<number | null>(0)
+  const [indicacao, setIndicacao] = useState<{ store: string; trial_days: number } | null>(null)
   useEffect(() => usarTemaDaMarca(), [])
   useEffect(() => {
     document.title = 'Komando — vendas, estoque, fiado e lucro da sua loja'
     supabase.rpc('get_public_pricing').then(({ data }) => setPrecos(data as Precos))
+    const ref = codigoIndicacao()
+    if (ref) supabase.rpc('get_referral_info', { _code: ref }).then(({ data }) => { if (data) setIndicacao(data as { store: string; trial_days: number }) })
   }, [])
-  const dias = precos?.trial_days ?? 7
+  const dias = indicacao?.trial_days ?? precos?.trial_days ?? 7
   const cta = `Testar grátis por ${dias} dias`
 
   return (
@@ -80,6 +84,11 @@ export default function Landing() {
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_70%_10%,#ede9fe_0%,transparent_70%),radial-gradient(40%_40%_at_10%_90%,#f5f3ff_0%,transparent_70%)]" />
         <div className="mx-auto grid max-w-6xl items-center gap-8 md:grid-cols-[1fr_1.1fr] md:gap-x-12 md:gap-y-8">
           <div className="md:col-start-1 md:row-start-1 md:self-end">
+            {indicacao && (
+              <div className="mb-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-900">
+                🎁 Indicação de <strong>{indicacao.store}</strong>: você testa grátis por <strong>{indicacao.trial_days} dias</strong>.
+              </div>
+            )}
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-800">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-600" /> Feito para lojistas
             </span>

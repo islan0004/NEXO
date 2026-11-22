@@ -28,6 +28,7 @@ import Caixa from './pages/Caixa'
 import Planilhas from './pages/Planilhas'
 import Equipe from './pages/Equipe'
 import Planos from './pages/Planos'
+import Indicar from './pages/Indicar'
 import Catalogo from './pages/Catalogo'
 import LojaPublica from './pages/LojaPublica'
 import Convite, { CHAVE_CONVITE } from './pages/Convite'
@@ -90,6 +91,7 @@ export default function App() {
           <Route path="/planilhas" element={<Planilhas />} />
           <Route path="/equipe" element={<Equipe />} />
           <Route path="/planos" element={<Planos />} />
+          <Route path="/indicar" element={<Indicar />} />
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

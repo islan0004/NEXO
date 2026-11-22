@@ -39,6 +39,7 @@ const FAQ: { grupo: string; itens: [string, string][] }[] = [
   { grupo: 'Conta e segurança', itens: [
     ['Meus dados ficam seguros?', 'Cada loja só enxerga os próprios dados. Outra loja não tem acesso a nada seu.'],
     ['Esqueci a senha.', 'Na tela de entrar, toque em “Esqueci a senha” e siga o link enviado para o seu e-mail.'],
+    ['Como indico o Komando para outro lojista?', 'No menu, toque em “Indique o Komando” e mande o seu link pelo WhatsApp. Quem criar a loja por ele testa grátis por 14 dias em vez de 7. A loja aparece na sua lista de indicadas.'],
   ] },
 ]
 

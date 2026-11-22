@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { supabase, traduzErro } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { Alert, AuthShell, Button, Field } from '../components/ui'
+import { codigoIndicacao, limparIndicacao } from '../lib/indicacao'
 
 export default function CriarLoja() {
   const { reload, select } = useStore()
@@ -12,8 +13,9 @@ export default function CriarLoja() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault(); setErro(''); setLoading(true)
-    const { data, error } = await supabase.rpc('create_store', { _name: nome, _document: doc || null })
+    const { data, error } = await supabase.rpc('create_store', { _name: nome, _document: doc || null, _ref: codigoIndicacao() })
     if (error) { setLoading(false); return setErro(traduzErro(error)) }
+    limparIndicacao()
     select(data as string)
     await reload()
     setLoading(false)

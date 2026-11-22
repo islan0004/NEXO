@@ -6,6 +6,9 @@ import App from './App'
 import { AuthProvider } from './lib/auth'
 import { ToastProvider } from './lib/toast'
 import { PerfilProvider } from './lib/perfil'
+import { capturarIndicacao } from './lib/indicacao'
+
+capturarIndicacao()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

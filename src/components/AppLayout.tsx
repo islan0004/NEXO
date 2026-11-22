@@ -19,6 +19,7 @@ const nav = [
   { to: '/catalogo', label: 'Catálogo online', gestor: true, tour: 'catalogo' },
   { to: '/equipe', label: 'Equipe', gestor: true, tour: 'equipe' },
   { to: '/planilhas', label: 'Planilhas', gestor: true, tour: 'planilhas' },
+  { to: '/indicar', label: 'Indique o Komando', gestor: true, tour: 'indicar' },
   { to: '/planos', label: 'Planos', dono: true, tour: 'planos' },
   { to: '/duvidas', label: 'Dúvidas', tour: 'duvidas' },
 ]
