@@ -61,25 +61,38 @@ export default function ClienteDetalhe() {
       </div>
 
       <Card>
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="text-sm text-muted">{devendo < 0 ? 'Crédito do cliente' : 'Saldo devedor'}</div>
-            <div className={`mt-1 text-3xl font-semibold ${saldo && atrasado(saldo) ? 'text-red-600' : devendo === 0 && quitado ? 'text-emerald-700' : 'text-brand-900'}`}>{brl(Math.abs(devendo))}</div>
-            {devendo === 0 && quitado && <div className="mt-1"><Badge tone="green">✓ Quitado · não deve nada</Badge></div>}
-            {devendo > 0 && venc && <div className={`mt-1 text-sm ${saldo && atrasado(saldo) ? 'font-medium text-red-600' : 'text-muted'}`}>{saldo && atrasado(saldo) ? 'Atrasado desde' : 'Vence em'} {venc}</div>}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {devendo > 0 && cliente.phone && (
-              <a href={linkWhatsApp(cliente.phone, msg)} target="_blank" rel="noreferrer"
-                className="rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-medium text-brand-800 hover:bg-brand-50">Cobrar no WhatsApp</a>
+        {devendo === 0 && canManage ? (
+          <button onClick={() => setDividaAnt(true)} className="group -m-2 block w-[calc(100%+1rem)] rounded-xl p-2 text-left transition hover:bg-brand-50 active:scale-[.99]">
+            <div className="text-sm text-muted">Saldo devedor</div>
+            <div className="mt-1 flex items-center gap-3">
+              <span className={`text-3xl font-semibold ${quitado ? 'text-emerald-700' : 'text-brand-900'}`}>{brl(0)}</span>
+              <span className="rounded-lg border border-dashed border-brand-300 px-2.5 py-1 text-sm font-medium text-brand-700 group-hover:border-brand-500">✎ Informar</span>
+            </div>
+            {quitado && <div className="mt-2"><Badge tone="green">✓ Quitado · não deve nada</Badge></div>}
+            <div className="mt-2 text-sm text-muted">Toque aqui para informar quanto {cliente.name.split(' ')[0]} está devendo.</div>
+          </button>
+        ) : (
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="text-sm text-muted">{devendo < 0 ? 'Crédito do cliente' : 'Saldo devedor'}</div>
+              <div className={`mt-1 text-3xl font-semibold ${saldo && atrasado(saldo) ? 'text-red-600' : devendo === 0 && quitado ? 'text-emerald-700' : 'text-brand-900'}`}>{brl(Math.abs(devendo))}</div>
+              {devendo === 0 && quitado && <div className="mt-1"><Badge tone="green">✓ Quitado · não deve nada</Badge></div>}
+              {devendo > 0 && venc && <div className={`mt-1 text-sm ${saldo && atrasado(saldo) ? 'font-medium text-red-600' : 'text-muted'}`}>{saldo && atrasado(saldo) ? 'Atrasado desde' : 'Vence em'} {venc}</div>}
+            </div>
+            {devendo > 0 && (
+              <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+                <Button onClick={() => setReceber('tudo')} className="col-span-2 py-3 text-base">✓ Pagou tudo · quitar</Button>
+                <Button variant="ghost" className="border border-brand-200" onClick={() => setReceber('parcial')}>Pagou uma parte</Button>
+                {cliente.phone
+                  ? <a href={linkWhatsApp(cliente.phone, msg)} target="_blank" rel="noreferrer" className="rounded-xl border border-brand-200 px-4 py-2.5 text-center text-sm font-medium text-brand-800 hover:bg-brand-50">Cobrar no WhatsApp</a>
+                  : <span />}
+              </div>
             )}
-            {devendo > 0 && <Button variant="ghost" className="border border-brand-200" onClick={() => setReceber('parcial')}>Pagou uma parte</Button>}
-            {devendo > 0 && <Button onClick={() => setReceber('tudo')}>✓ Pagou tudo</Button>}
           </div>
-        </div>
-        {canManage && (
+        )}
+        {canManage && devendo !== 0 && (
           <div className="mt-4 border-t border-brand-100 pt-3">
-            <button onClick={() => setDividaAnt(true)} className="text-sm font-medium text-brand-700 hover:underline">+ Lançar dívida anterior (do caderno)</button>
+            <button onClick={() => setDividaAnt(true)} className="text-sm font-medium text-brand-700 hover:underline">+ Somar outra dívida anterior (do caderno)</button>
           </div>
         )}
       </Card>
@@ -188,7 +201,7 @@ function DividaAnterior({ customerId, onClose, onDone }: { customerId: string; o
   }
 
   return (
-    <Modal title="Lançar dívida anterior" onClose={onClose}>
+    <Modal title="Quanto ele está devendo?" onClose={onClose}>
       <form onSubmit={onSubmit} className="space-y-4">
         {erro && <Alert>{erro}</Alert>}
         <p className="text-sm text-muted">Para o que o cliente já devia antes de usar o Komando, como o fiado do caderno. Entra no saldo e na cobrança, mas <strong className="text-ink">não conta como venda</strong> no faturamento, no lucro nem no caixa.</p>
