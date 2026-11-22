@@ -5,6 +5,7 @@ import { Alert, Badge, Button, Card, Field, Modal, Select, Spinner } from '../co
 import { SEGMENTOS } from './Onboarding'
 import { PLANOS, nomePlano } from '../lib/planos'
 import type { Plano } from '../lib/store'
+import AvisosAdmin from '../components/AvisosAdmin'
 
 const perfilLoja = (l: Loja) => [SEGMENTOS.find((x) => x.id === l.segment)?.label, l.onboarding?.faturamento].filter(Boolean).join(' · ')
 
@@ -79,6 +80,8 @@ export default function Admin() {
         </div>
         <Button variant="ghost" onClick={() => setConfig(true)}>Configurações</Button>
       </div>
+
+      <AvisosAdmin />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi label="Receita mensal (MRR)" valor={brl(ov.mrr)} dica={`${ov.paying} loja(s) pagante(s)`} verde />
