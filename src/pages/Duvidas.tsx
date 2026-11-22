@@ -26,7 +26,9 @@ const FAQ: { grupo: string; itens: [string, string][] }[] = [
   ] },
   { grupo: 'Fiado', itens: [
     ['Como vendo fiado?', 'Na tela de venda, escolha a forma de pagamento “Fiado” e selecione ou cadastre o cliente.'],
-    ['O cliente pagou uma parte. Como registro?', 'Em “Fiado”, abra o cliente e toque em “Registrar pagamento”. Pode ser qualquer valor até o total da dívida.'],
+    ['O cliente pagou uma parte. Como registro?', 'Em “Fiado”, abra o cliente e toque em “Pagou uma parte”. Pode ser qualquer valor até o total da dívida.'],
+    ['O cliente pagou tudo. Como marco?', 'Na ficha do cliente, toque em “✓ Pagou tudo” e escolha como ele pagou. O saldo zera e ele aparece como “Quitado”.'],
+    ['Como passo o fiado do caderno para o app?', 'Cadastre o cliente e preencha “Já deve alguma coisa?”, ou abra a ficha dele e toque em “Lançar dívida anterior”. Esse valor entra no saldo e na cobrança, mas não conta como venda no faturamento nem no lucro. Só o dono e o gerente podem lançar.'],
     ['Quando o fiado vence?', 'O prazo é de 30 dias a partir da compra mais antiga em aberto. Depois disso o cliente aparece como atrasado.'],
     ['Como cobro sem ficar chato?', 'Na ficha do cliente, toque em “Cobrar no WhatsApp”. A mensagem já vai educada, com o valor e o vencimento.'],
   ] },

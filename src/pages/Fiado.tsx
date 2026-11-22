@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { brl, supabase, traduzErro } from '../lib/supabase'
+import { brl, parseNum, supabase, traduzErro } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { Dica } from '../components/Tour'
 import { Alert, Badge, Button, Card, Field, Modal, Spinner } from '../components/ui'
@@ -44,7 +44,7 @@ export default function Fiado() {
 
   return (
     <div className="space-y-5">
-      <Dica id="fiado" titulo="Fiado sem caderninho" texto="Na venda, escolha o pagamento “Fiado” e o cliente. Aqui você vê quem deve, quanto e desde quando, registra pagamentos e cobra pelo WhatsApp." />
+      <Dica id="fiado" titulo="Fiado sem caderninho" texto="Na venda, escolha o pagamento “Fiado” e o cliente. Quem já devia antes (do caderno), cadastre com a “Dívida anterior”: ela não conta como venda. Aqui você vê quem deve, registra pagamentos e cobra pelo WhatsApp." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Fiado</h1>
@@ -79,7 +79,7 @@ export default function Fiado() {
               <li key={s.customer_id}>
                 <button onClick={() => nav(`/fiado/${s.customer_id}`)} className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-brand-50/50">
                   <div>
-                    <div className="flex items-center gap-2 font-medium">{s.name}{atrasado(s) && <Badge tone="red">Atrasado</Badge>}{!s.active && <Badge tone="gray">Inativo</Badge>}</div>
+                    <div className="flex items-center gap-2 font-medium">{s.name}{atrasado(s) && <Badge tone="red">Atrasado</Badge>}{Number(s.balance) === 0 && Number(s.charged) > 0 && <Badge tone="green">✓ Quitado</Badge>}{!s.active && <Badge tone="gray">Inativo</Badge>}</div>
                     <div className="text-xs text-muted">
                       {s.phone ?? 'Sem telefone'}
                       {Number(s.balance) > 0 && s.due_at && ` · vence ${new Date(s.due_at).toLocaleDateString('pt-BR')}`}
@@ -112,12 +112,17 @@ export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
   const [ativo, setAtivo] = useState(cliente?.active ?? true)
   const [diaN, setDiaN] = useState(cliente?.birthday ? String(Number(cliente.birthday.slice(8, 10))) : '')
   const [mesN, setMesN] = useState(cliente?.birthday ? String(Number(cliente.birthday.slice(5, 7))) : '')
+  const [divida, setDivida] = useState('')
+  const [chave] = useState(() => crypto.randomUUID())
+  const { canManage } = useStore()
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault(); setErro('')
     if (!nome.trim()) return setErro('Informe o nome.')
+    const valorDivida = divida.trim() ? Math.round(parseNum(divida) * 100) / 100 : 0
+    if (divida.trim() && !(valorDivida > 0)) return setErro('Informe um valor válido para a dívida anterior.')
     if (!!diaN !== !!mesN) return setErro('Escolha o dia e o mês do aniversário.')
     const birthday = diaN && mesN ? `2000-${mesN.padStart(2, '0')}-${diaN.padStart(2, '0')}` : null
     if (birthday && new Date(`${birthday}T12:00:00`).getDate() !== Number(diaN)) return setErro('Essa data não existe.')
@@ -126,8 +131,12 @@ export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
     const res = cliente
       ? await supabase.from('customers').update(dados).eq('id', cliente.id).select('id').single()
       : await supabase.from('customers').insert({ ...dados, store_id: storeId }).select('id').single()
+    if (res.error) { setLoading(false); return setErro(traduzErro(res.error)) }
+    if (!cliente && valorDivida > 0) {
+      const d = await supabase.rpc('add_customer_opening_debt', { _customer_id: res.data.id, _amount: valorDivida, _idempotency_key: chave, _note: 'Dívida anterior (caderno)' })
+      if (d.error) { setLoading(false); onSaved(res.data.id); return }
+    }
     setLoading(false)
-    if (res.error) return setErro(traduzErro(res.error))
     onSaved(res.data.id)
   }
 
@@ -149,6 +158,12 @@ export function ClienteForm({ storeId, cliente, onClose, onSaved }: {
           </div>
         </div>
         <Field label="Observações" value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Ex.: paga todo dia 10" />
+        {!cliente && canManage && (
+          <div>
+            <Field label="Já deve alguma coisa? (opcional)" inputMode="decimal" value={divida} onChange={(e) => setDivida(e.target.value)} placeholder="Ex.: 250,00" />
+            <p className="mt-1 text-xs text-muted">Para quem já tinha fiado no caderno. Entra no saldo do cliente, mas não conta como venda.</p>
+          </div>
+        )}
         {cliente && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} /> Cliente ativo (pode comprar fiado)</label>}
         <div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button><Button type="submit" loading={loading}>Salvar</Button></div>
       </form>

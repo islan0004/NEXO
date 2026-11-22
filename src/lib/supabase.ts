@@ -51,6 +51,8 @@ const messages: Record<string, string> = {
   slug_taken: 'Esse endereço já é de outra loja.',
   amount_exceeds_balance: 'O valor é maior que a dívida do cliente.',
   invalid_amount: 'Informe um valor válido.',
+  invalid_date: 'A data não pode ser no futuro.',
+  debt_already_paid: 'Essa dívida já tem pagamento registrado e não pode ser excluída.',
 }
 
 export const METODOS: Record<string, string> = {
