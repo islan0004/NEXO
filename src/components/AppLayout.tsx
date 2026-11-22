@@ -45,7 +45,7 @@ export default function AppLayout() {
 
   const sidebar = (
     <div className="flex h-full flex-col gap-6 p-4">
-      <Logo />
+      <Link to="/" onClick={() => setOpen(false)} aria-label="Ir para o início" className="w-fit rounded-xl"><Logo /></Link>
       {stores.length > 1 ? (
         <select value={current?.id} onChange={(e) => select(e.target.value)}
           className="rounded-xl border border-brand-200 bg-white px-3 py-2 text-sm">
@@ -85,7 +85,7 @@ export default function AppLayout() {
       )}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-brand-100 bg-white px-4 py-3 md:hidden">
-          <Logo />
+          <Link to="/" aria-label="Ir para o início" className="rounded-xl active:opacity-70"><Logo /></Link>
           <button data-tour="menu" onClick={() => setOpen(true)} className="rounded-lg px-3 py-1.5 text-sm font-medium text-brand-800 hover:bg-brand-100">Menu</button>
         </header>
         {canManage && <AvisoAssinatura a={assinatura} />}

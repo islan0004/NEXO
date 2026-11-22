@@ -65,7 +65,7 @@ export default function Landing() {
       {/* topo */}
       <header className="sticky top-0 z-30 border-b border-brand-100/70 bg-white/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-          <Logo />
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} aria-label="Voltar ao topo"><Logo /></a>
           <nav className="flex items-center gap-2 text-sm">
             <a href="#planos" className="hidden rounded-lg px-3 py-2 text-muted hover:text-ink sm:block">Planos</a>
             <a href="#duvidas" className="hidden rounded-lg px-3 py-2 text-muted hover:text-ink sm:block">Dúvidas</a>
